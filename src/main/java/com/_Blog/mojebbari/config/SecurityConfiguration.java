@@ -22,26 +22,25 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
                 // 1. Disable CSRF (we use stateless JWTs)
-                .csrf(csrf -> csrf.disable())
+                http.csrf(csrf -> csrf.disable());
 
                 // 2. Define the "white list" - endpoints that DON'T need authentication
-                .authorizeHttpRequests(auth -> auth
+                http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**") // All auth routes
                         .permitAll()
                         .anyRequest() // Any other request...
                         .authenticated() // ...must be authenticated
-                )
+                );
 
                 // 3. We use stateless sessions; Spring won't create sessions
-                .sessionManagement(session -> session
+                http.sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                );
 
                 // 4. Tell Spring to use our custom beans
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                http.authenticationProvider(authenticationProvider);
+                http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

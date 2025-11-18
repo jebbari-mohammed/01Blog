@@ -18,5 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // We add this custom method because Spring Security needs to find a user by
     // their email (which we defined as their 'username')
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmailOrUsername(String email, String username);
 }

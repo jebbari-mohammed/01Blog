@@ -22,7 +22,7 @@ public class ApplicationConfig {
     // 1. Tells Spring how to find a user
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
+        return username -> userRepository.findByEmailOrUsername(username, username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
