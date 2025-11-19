@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class CreatePostRequest {
 
-    @NotBlank(message = "Username or Email is required")
-    private String identifier; // Changed from 'email' to 'identifier'
+    @NotBlank(message = "Post content cannot be empty")
+    private String text;
 
-    @NotBlank(message = "Password is required")
-    private String password;
+    // Optional: For now, this is just a URL string. 
+    // Later, we can handle real file uploads.
+    private String mediaUrl; 
 }

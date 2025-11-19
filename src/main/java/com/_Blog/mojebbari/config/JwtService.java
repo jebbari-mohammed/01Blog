@@ -19,7 +19,7 @@ public class JwtService {
 
     // 1. Generate a 256-bit secret key for signing tokens
     //    You should move this to a properties file!
-    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    private static final String SECRET_KEY = "404E635276556B586E3272357538712F413F4428472B4B6250645367566B5970";
 
     // 2. Methods to extract information from a token
     public String extractUsername(String token) {
