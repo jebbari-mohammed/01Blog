@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,5 +46,14 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("error", "Invalid email/username or password.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error); // Returns 401 Unauthorized
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, String> error = new HashMap<>();
+        
+        // We use ex.getMessage() to grab the message we set in the service!
+        error.put("error", ex.getMessage()); 
+        
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error); // Returns 403 Forbidden
     }
 }

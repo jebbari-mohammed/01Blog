@@ -39,4 +39,12 @@ public class PostController {
     public ResponseEntity<List<PostResponse>> getUserPosts(@PathVariable String username) {
         return ResponseEntity.ok(postService.getPostsByUsername(username));
     }
+    @DeleteMapping("/{postId}") // The {postId} is passed in the URL path
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long postId, // Get the ID from the URL path
+            Principal principal // Get the identity of the logged-in user
+    ) {
+        postService.deletePost(postId, principal.getName());
+        return ResponseEntity.noContent().build(); // 204 No Content for successful deletion
+    }
 }

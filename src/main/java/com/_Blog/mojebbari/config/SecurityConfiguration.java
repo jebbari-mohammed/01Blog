@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse; 
+import org.springframework.http.MediaType;
 
 @Configuration
 @EnableWebSecurity
@@ -41,6 +43,24 @@ public class SecurityConfiguration {
                 // 4. Tell Spring to use our custom beans
                 http.authenticationProvider(authenticationProvider);
                 http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                
+                // 5. Custom exception handling for authentication/authorization failures
+                http.exceptionHandling(exception -> exception
+                    // Handle 403 Forbidden (Authorization failure)
+                    .accessDeniedHandler((request, response, accessDeniedException) -> {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        response.getWriter().write(
+                            "{\"error\": \"Authorization Failed: " + accessDeniedException.getMessage() + "\"}"
+                        );
+                    })
+                    // Handle 401 Unauthorized (Authentication failure, e.g., bad token)
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        response.getWriter().write("{\"error\": \"Authentication Required: You must provide a valid token.\"}");
+                    })
+                );
 
         return http.build();
     }
