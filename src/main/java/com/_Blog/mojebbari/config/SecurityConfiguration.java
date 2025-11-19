@@ -58,7 +58,7 @@ public class SecurityConfiguration {
                     .authenticationEntryPoint((request, response, authException) -> {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                        response.getWriter().write("{\"error\": \"Authentication Required: You must provide a valid token.\"}");
+                        response.getWriter().write("{\"error\": \"No Post Found\"}");
                     })
                 );
 
