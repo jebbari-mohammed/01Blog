@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,5 +35,16 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request
     ) {
         return ResponseEntity.ok(authService.login(request));
+    }
+    
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+        String refreshToken = authHeader.substring(7);
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
 }

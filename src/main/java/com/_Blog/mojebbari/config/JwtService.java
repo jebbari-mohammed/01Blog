@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,14 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // 1. Generate a 256-bit secret key for signing tokens
-    //    You should move this to a properties file!
-    private static final String SECRET_KEY = "404E635276556B586E3272357538712F413F4428472B4B6250645367566B5970";
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+    
+    @Value("${jwt.expiration.hours}")
+    private long expirationHours;
+    
+    @Value("${jwt.refresh-expiration.days}")
+    private long refreshTokenExpirationDays;
 
     // 2. Methods to extract information from a token
     public String extractUsername(String token) {
@@ -37,11 +43,23 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        long expirationMs = expirationHours * 60 * 60 * 1000; // Convert hours to milliseconds
+        return buildToken(extraClaims, userDetails, expirationMs);
+    }
+    
+    // NEW: Generate refresh token
+    public String generateRefreshToken(UserDetails userDetails) {
+        long expirationMs = refreshTokenExpirationDays * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+        return buildToken(new HashMap<>(), userDetails, expirationMs);
+    }
+    
+    // Helper method to build tokens
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationMs) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername()) // user's email
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -70,7 +88,9 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
+
+

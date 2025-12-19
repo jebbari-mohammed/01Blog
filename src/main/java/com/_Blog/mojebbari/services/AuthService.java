@@ -7,8 +7,10 @@ import com._Blog.mojebbari.dto.RegisterRequest;
 import com._Blog.mojebbari.models.Role;
 import com._Blog.mojebbari.models.User;
 import com._Blog.mojebbari.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,12 +37,14 @@ public class AuthService {
         // 2. Save to database
         userRepository.save(user);
 
-        // 3. Generate a token for them immediately
+        // 3. Generate tokens for them immediately
         var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
-        // 4. Return the token
+        // 4. Return both tokens
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -58,12 +62,32 @@ public AuthenticationResponse login(LoginRequest request) {
         var user = userRepository.findByEmailOrUsername(request.getIdentifier(), request.getIdentifier())
                 .orElseThrow();
 
-        // 3. Generate token (The token will still contain the user's Email as the subject, 
+        // 3. Generate tokens (The token will still contain the user's Email as the subject, 
         //    because user.getUsername() in your User model returns the email. This is good!)
         var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+    
+    // --- REFRESH TOKEN ---
+    public AuthenticationResponse refreshToken(String refreshToken) {
+        String username = jwtService.extractUsername(refreshToken);
+        var user = userRepository.findByEmailOrUsername(username, username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new BadCredentialsException("Invalid refresh token");
+        }
+        
+        var newAccessToken = jwtService.generateToken(user);
+        
+        return AuthenticationResponse.builder()
+                .token(newAccessToken)
+                .refreshToken(refreshToken) // Return same refresh token
                 .build();
     }
 }

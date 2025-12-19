@@ -7,10 +7,12 @@ import lombok.Data;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,13 +30,9 @@ public class User implements UserDetails {
 
     @Column(nullable = false, unique = true) // JPA: Username must be unique and not null
     private String username;
-    
-    // You can add other fields like firstName, lastName, etc.
-    // private String firstName;
-    // private String lastName;
 
-    @Email // hadi katkhdam f registration 9bal mn hna f controllers o khasni ndeclari @valid tma bach tkhdem
-    @NotBlank // hadi katkhdam f registration 9bal mn hna f controllers o khasni ndeclari @valid tma bach tkhdem
+    @Email // Validates email format during registration
+    @NotBlank // Ensures email is not blank
     @Column(nullable = false, unique = true) // JPA: Email must be unique and not null
     private String email;
 
@@ -43,6 +41,21 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING) // JPA: Stores the enum as a string ("USER" or "ADMIN")
     private Role role;
+    
+    // --- Profile Fields ---
+    
+    @Column(length = 500) // Bio can be up to 500 characters
+    private String bio;
+    
+    @Column(name = "profile_picture")
+    private String profilePicture; // URL to profile image
+    
+    @Column(name = "cover_image")
+    private String coverImage; // URL to cover/banner image
+    
+    @CreationTimestamp // Automatically set when user is created
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     // --- UserDetails Methods (Required by Spring Security) ---
 

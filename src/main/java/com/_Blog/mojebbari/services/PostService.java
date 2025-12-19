@@ -3,13 +3,15 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import com._Blog.mojebbari.dto.CreatePostRequest;
 import com._Blog.mojebbari.dto.PostResponse;
+import com._Blog.mojebbari.dto.UpdatePostRequest;
 import com._Blog.mojebbari.models.Post;
 import com._Blog.mojebbari.models.Role;
 import com._Blog.mojebbari.models.User;
 import com._Blog.mojebbari.repositories.PostRepository;
 import com._Blog.mojebbari.repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,11 +44,10 @@ public class PostService {
         return mapToResponse(savedPost);
     }
 
-    // 2. Get All Posts (For the feed)
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    // 2. Get All Posts (For the feed) with pagination
+    public Page<PostResponse> getAllPosts(Pageable pageable) {
+        return postRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     // 3. Get Posts by Specific User (For profile page)
@@ -58,6 +59,33 @@ public class PostService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+    
+    // 4. Update a Post
+    public PostResponse updatePost(Long postId, UpdatePostRequest request, String username) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found with ID: " + postId));
+
+        // AUTHORIZATION LOGIC: Only author can update
+        boolean isAuthor = post.getUser().getEmail().equals(username) || 
+                           post.getUser().getUsername().equals(username);
+        
+        if (!isAuthor) {
+            throw new AccessDeniedException("You can only update your own posts");
+        }
+        
+        // Update only non-null fields
+        if (request.getText() != null) {
+            post.setText(request.getText());
+        }
+        if (request.getMediaUrl() != null) {
+            post.setMediaUrl(request.getMediaUrl());
+        }
+        
+        Post savedPost = postRepository.save(post);
+        return mapToResponse(savedPost);
+    }
+    
+    // 5. Delete a Post
     public void deletePost(Long postId, String principalUsername) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found with ID: " + postId));

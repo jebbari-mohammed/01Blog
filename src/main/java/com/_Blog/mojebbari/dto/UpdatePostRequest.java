@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-    private String token;
-    private String refreshToken;
+public class UpdatePostRequest {
+    private String text;
+    private String mediaUrl;
 }
