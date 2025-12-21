@@ -13,8 +13,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PostResponse {
     private Long id;
-    private String text;
+    private String title;
+    private String content;
+    private String category;
     private String mediaUrl;
-    private String authorUsername; // Just the name, not the whole User object
-    private LocalDateTime timestamp;
+    private String authorUsername;
+    private Long authorId;
+    private LocalDateTime createdAt;
+    
+    // Interaction counts
+    private long likeCount;
+    private long commentCount;
+    private boolean isLikedByCurrentUser;
 }

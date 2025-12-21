@@ -54,7 +54,7 @@ public class UserService {
         // Build response
         return UserProfileResponse.builder()
                 .id(user.getId())
-                .username(user.getUsername())
+                .username(user.getActualUsername()) // Use actual username, not email
                 .email(user.getEmail()) // Consider privacy: maybe only show if isOwnProfile
                 .bio(user.getBio())
                 .profilePicture(user.getProfilePicture())

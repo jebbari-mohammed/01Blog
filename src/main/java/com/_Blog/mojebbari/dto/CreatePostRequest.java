@@ -12,10 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreatePostRequest {
 
-    @NotBlank(message = "Post content cannot be empty")
-    private String text;
+    @NotBlank(message = "Post title cannot be empty")
+    private String title;
 
-    // Optional: For now, this is just a URL string. 
-    // Later, we can handle real file uploads.
-    private String mediaUrl; 
+    @NotBlank(message = "Post content cannot be empty")
+    private String content;
+
+    private String category; // Optional: TECH, LIFESTYLE, FOOD, etc.
+
+    private String mediaUrl; // Optional: URL to image or video
 }

@@ -1,5 +1,6 @@
 package com._Blog.mojebbari.config;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +56,21 @@ public class GlobalExceptionHandler {
         error.put("error", ex.getMessage()); 
         
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error); // Returns 403 Forbidden
+    }
+    
+    // 5. Handle Illegal State Errors (e.g., already liked post, already following user)
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("message", ex.getMessage()); // Use "message" instead of "error" for consistency
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error); // Returns 409 Conflict
+    }
+    
+    // 6. Handle Entity Not Found Errors (e.g., post not found, user not found)
+    @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(jakarta.persistence.EntityNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error); // Returns 404 Not Found
     }
 }

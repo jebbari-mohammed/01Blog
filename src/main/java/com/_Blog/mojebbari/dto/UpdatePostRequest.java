@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdatePostRequest {
-    private String text;
+    private String title;
+    private String content;
+    private String category;
     private String mediaUrl;
 }

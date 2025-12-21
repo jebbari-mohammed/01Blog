@@ -32,9 +32,11 @@ public class PostService {
 
         // Build the post
         Post post = Post.builder()
-                .text(request.getText())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .category(request.getCategory())
                 .mediaUrl(request.getMediaUrl())
-                .user(user) // LINK THE POST TO THE USER
+                .user(user)
                 .build();
 
         // Save to DB
@@ -74,8 +76,14 @@ public class PostService {
         }
         
         // Update only non-null fields
-        if (request.getText() != null) {
-            post.setText(request.getText());
+        if (request.getTitle() != null) {
+            post.setTitle(request.getTitle());
+        }
+        if (request.getContent() != null) {
+            post.setContent(request.getContent());
+        }
+        if (request.getCategory() != null) {
+            post.setCategory(request.getCategory());
         }
         if (request.getMediaUrl() != null) {
             post.setMediaUrl(request.getMediaUrl());
@@ -115,10 +123,16 @@ public class PostService {
     private PostResponse mapToResponse(Post post) {
         return PostResponse.builder()
                 .id(post.getId())
-                .text(post.getText())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .category(post.getCategory())
                 .mediaUrl(post.getMediaUrl())
-                .timestamp(post.getTimestamp())
-                .authorUsername(post.getUser().getUsername()) // Grab just the username
+                .createdAt(post.getCreatedAt())
+                .authorUsername(post.getUser().getActualUsername()) // Use actual username, not email
+                .authorId(post.getUser().getId())
+                .likeCount(0L)  // TODO: Calculate from LikeRepository
+                .commentCount(0L)  // TODO: Calculate from CommentRepository
+                .isLikedByCurrentUser(false)  // TODO: Check from LikeRepository
                 .build();
     }
 }

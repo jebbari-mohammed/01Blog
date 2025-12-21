@@ -37,7 +37,7 @@ public class PostController {
     public ResponseEntity<Page<PostResponse>> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "timestamp") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDirection
     ) {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("ASC") 

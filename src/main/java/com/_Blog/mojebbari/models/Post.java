@@ -21,13 +21,18 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT") // Use TEXT for longer-form content
-    private String text;
+    @Column(nullable = false)
+    private String title;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
+
+    private String category; // TECH, LIFESTYLE, etc.
 
     private String mediaUrl; // URL to the image or video
 
-    @CreationTimestamp // Automatically sets the time when the post is created
-    private LocalDateTime timestamp;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     // --- Relationship with User ---
     @ManyToOne(fetch = FetchType.LAZY)

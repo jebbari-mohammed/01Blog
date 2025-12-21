@@ -71,6 +71,11 @@ public class User implements UserDetails {
         // You could also use the 'username' field
         return email;
     }
+    
+    // Custom method to get the actual username field (not email)
+    public String getActualUsername() {
+        return username;
+    }
 
     @Override
     public String getPassword() {
