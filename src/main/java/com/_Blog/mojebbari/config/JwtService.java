@@ -27,14 +27,14 @@ public class JwtService {
     @Value("${jwt.refresh-expiration.days}")
     private long refreshTokenExpirationDays;
 
-    // 2. Methods to extract information from a token
+    // 2. had l method bach njebdo username mn token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        final Claims claims = extractAllClaims(token); // extractAllClaims katjib lina kolchi mn token
+        return claimsResolver.apply(claims); // hna kan applyiw function 3la claims bach njibo li bghina
     }
 
     // 3. Methods to generate a new token
@@ -56,7 +56,7 @@ public class JwtService {
     // Helper method to build tokens
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expirationMs) {
         return Jwts.builder()
-                .setClaims(extraClaims)
+                .setClaims(extraClaims)  // hna kanzido ay claims bghina
                 .setSubject(userDetails.getUsername()) // user's email
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
