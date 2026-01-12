@@ -1,6 +1,7 @@
 package com._Blog.mojebbari.controllers;
 
 import com._Blog.mojebbari.dto.LikeResponse;
+import com._Blog.mojebbari.dto.MessageResponse;
 import com._Blog.mojebbari.services.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +22,16 @@ public class LikeController {
      * POST /api/posts/{postId}/likes
      * 
      * Example: POST /api/posts/1/likes
-     * Response: 200 OK with message
+     * Response: 200 OK with JSON message
      */
     @PostMapping("/{postId}/likes")
-    public ResponseEntity<String> likePost(
+    public ResponseEntity<MessageResponse> likePost(
             @PathVariable Long postId,
             Authentication authentication) {
         
         String userEmail = authentication.getName();
         likeService.likePost(postId, userEmail);
-        return ResponseEntity.ok("Post liked successfully");
+        return ResponseEntity.ok(new MessageResponse("Post liked successfully"));
     }
 
     /**
@@ -38,16 +39,16 @@ public class LikeController {
      * DELETE /api/posts/{postId}/likes
      * 
      * Example: DELETE /api/posts/1/likes
-     * Response: 200 OK with message
+     * Response: 200 OK with JSON message
      */
     @DeleteMapping("/{postId}/likes")
-    public ResponseEntity<String> unlikePost(
+    public ResponseEntity<MessageResponse> unlikePost(
             @PathVariable Long postId,
             Authentication authentication) {
         
         String userEmail = authentication.getName();
         likeService.unlikePost(postId, userEmail);
-        return ResponseEntity.ok("Post unliked successfully");
+        return ResponseEntity.ok(new MessageResponse("Post unliked successfully"));
     }
 
     /**

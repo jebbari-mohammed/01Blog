@@ -1,0 +1,58 @@
+<!-- Navbar using Angular Material -->
+<mat-toolbar color="primary" class="navbar">
+  <div class="navbar-container">
+    <!-- Left side: Logo and app name -->
+    <div class="navbar-left">
+      <button mat-icon-button routerLink="/home">
+        <mat-icon>article</mat-icon>
+      </button>
+      <span class="app-name" routerLink="/home">01Blog</span>
+    </div>
+
+    <!-- Right side: Navigation links -->
+    <div class="navbar-right">
+      <!-- Home link (always visible) -->
+      <button mat-button routerLink="/home">
+        <mat-icon>home</mat-icon>
+        Home
+      </button>
+
+      <!-- If user is logged in -->
+      <ng-container *ngIf="currentUser">
+        <!-- Create Post button -->
+        <button mat-raised-button color="accent" routerLink="/post/create">
+          <mat-icon>add</mat-icon>
+          Create Post
+        </button>
+
+        <!-- User menu dropdown -->
+        <button mat-button [matMenuTriggerFor]="userMenu">
+          <mat-icon>account_circle</mat-icon>
+          {{ currentUser.username }}
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item (click)="goToProfile()">
+            <mat-icon>person</mat-icon>
+            <span>My Profile</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
+      </ng-container>
+
+      <!-- If user is NOT logged in -->
+      <ng-container *ngIf="!currentUser">
+        <button mat-button routerLink="/auth/login">
+          Login
+        </button>
+        <button mat-raised-button color="accent" routerLink="/auth/register">
+          Register
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</mat-toolbar>

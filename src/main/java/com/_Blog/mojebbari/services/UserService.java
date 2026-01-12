@@ -112,15 +112,4 @@ public class UserService {
         // Return updated profile
         return getUserProfile(updatedUser.getUsername(), userId);
     }
-
-    /**
-     * Get user by ID
-     * 
-     * @param userId - User ID
-     * @return User entity
-     */
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
-    }
 }

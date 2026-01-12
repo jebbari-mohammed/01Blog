@@ -1,0 +1,133 @@
+<div class="create-post-container">
+  <mat-card class="create-post-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>edit</mat-icon>
+        Create New Post
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+        <!-- Title Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Title</mat-label>
+          <input 
+            matInput 
+            formControlName="title" 
+            placeholder="Enter a catchy title..."
+            maxlength="200">
+          <mat-icon matPrefix>title</mat-icon>
+          <mat-hint align="end">
+            {{postForm.get('title')?.value?.length || 0}}/200
+          </mat-hint>
+          <mat-error *ngIf="postForm.get('title')?.invalid && postForm.get('title')?.touched">
+            {{ getTitleError() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Category Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="category" placeholder="Choose a category">
+            <mat-option *ngFor="let category of categories" [value]="category">
+              {{ category }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-error *ngIf="postForm.get('category')?.invalid && postForm.get('category')?.touched">
+            {{ getCategoryError() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Content Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Content</mat-label>
+          <textarea 
+            matInput 
+            formControlName="content"
+            placeholder="Write your post content here..."
+            rows="12"
+            maxlength="5000">
+          </textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint align="end">
+            {{postForm.get('content')?.value?.length || 0}}/5000
+          </mat-hint>
+          <mat-error *ngIf="postForm.get('content')?.invalid && postForm.get('content')?.touched">
+            {{ getContentError() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+          <div class="upload-label">
+            <mat-icon>image</mat-icon>
+            <span>Add Image (Optional)</span>
+          </div>
+
+          <!-- File Input (Hidden) -->
+          <input 
+            type="file" 
+            #fileInput 
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            style="display: none;">
+
+          <!-- Upload Button (if no image) -->
+          <button 
+            *ngIf="!imagePreview"
+            mat-stroked-button 
+            type="button"
+            (click)="fileInput.click()"
+            [disabled]="isUploading">
+            <mat-icon>cloud_upload</mat-icon>
+            {{ isUploading ? 'Uploading...' : 'Choose Image' }}
+          </button>
+
+          <!-- Upload Progress -->
+          <mat-progress-bar 
+            *ngIf="isUploading" 
+            mode="indeterminate"
+            class="upload-progress">
+          </mat-progress-bar>
+
+          <!-- Image Preview -->
+          <div *ngIf="imagePreview" class="image-preview-container">
+            <img [src]="imagePreview" alt="Preview" class="image-preview">
+            <button 
+              mat-icon-button 
+              color="warn"
+              type="button"
+              (click)="removeImage()"
+              class="remove-image-btn"
+              [disabled]="isUploading">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="postForm.invalid || isLoading">
+            <mat-icon>publish</mat-icon>
+            {{ isLoading ? 'Publishing...' : 'Publish Post' }}
+          </button>
+          
+          <button 
+            mat-stroked-button 
+            type="button"
+            (click)="onCancel()"
+            [disabled]="isLoading">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

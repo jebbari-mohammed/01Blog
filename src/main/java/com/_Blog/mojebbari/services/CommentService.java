@@ -185,30 +185,7 @@ public class CommentService {
         return commentRepository.countByPost(post);
     }
 
-    /**
-     * Get all comments by a specific user
-     * 
-     * @param userId - ID of the user
-     * @return List of CommentResponse
-     */
-    public List<CommentResponse> getCommentsByUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
-
-        List<Comment> comments = commentRepository.findByUserOrderByCreatedAtDesc(user);
-
-        return comments.stream()
-                .map(comment -> mapToCommentResponse(comment, userId))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Helper method: Convert Comment entity to CommentResponse DTO
-     * 
-     * @param comment - Comment entity
-     * @param currentUserId - ID of logged-in user (for isOwnComment check)
-     * @return CommentResponse DTO
-     */
+    // Convert Comment to CommentResponse
     private CommentResponse mapToCommentResponse(Comment comment, Long currentUserId) {
         User author = comment.getUser();
         
@@ -224,7 +201,7 @@ public class CommentService {
                 .text(comment.getText())
                 .postId(comment.getPost().getId())
                 .authorId(author.getId())
-                .authorUsername(author.getActualUsername()) // Use the actual username field, not email
+                .authorUsername(author.getActualUsername())
                 .authorProfilePicture(author.getProfilePicture())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())

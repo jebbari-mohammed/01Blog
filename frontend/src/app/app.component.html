@@ -1,0 +1,18 @@
+<!-- 
+  Main App Template
+  
+  What it does:
+  - Shows navbar at the top (on every page)
+  - Shows router-outlet where different pages are displayed based on the URL
+-->
+
+<!-- Navbar component - always visible at the top -->
+<app-navbar></app-navbar>
+
+<!-- Router outlet - displays the current page component based on URL -->
+<!-- For example:
+     - URL: /home -> shows HomeComponent
+     - URL: /auth/login -> shows LoginComponent
+     - URL: /profile/john -> shows ProfileComponent for user "john"
+-->
+<router-outlet />

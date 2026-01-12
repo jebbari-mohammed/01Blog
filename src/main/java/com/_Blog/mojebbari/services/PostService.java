@@ -1,6 +1,8 @@
 package com._Blog.mojebbari.services;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com._Blog.mojebbari.dto.CreatePostRequest;
 import com._Blog.mojebbari.dto.PostResponse;
 import com._Blog.mojebbari.dto.UpdatePostRequest;
@@ -9,6 +11,8 @@ import com._Blog.mojebbari.models.Role;
 import com._Blog.mojebbari.models.User;
 import com._Blog.mojebbari.repositories.PostRepository;
 import com._Blog.mojebbari.repositories.UserRepository;
+import com._Blog.mojebbari.repositories.LikeRepository;
+import com._Blog.mojebbari.repositories.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +27,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     // 1. Create a Post
     public PostResponse createPost(CreatePostRequest request, String username) {
@@ -121,6 +127,23 @@ public class PostService {
 
     // Helper method to convert Post Entity -> PostResponse DTO
     private PostResponse mapToResponse(Post post) {
+        // Get current logged-in user (if any)
+        User currentUser = getCurrentUser();
+        System.out.println("DEBUG - MapToResponse for post #" + post.getId() + ", currentUser: " + 
+                          (currentUser != null ? currentUser.getActualUsername() + " (ID: " + currentUser.getId() + ")" : "null"));
+        
+        // Check if current user has liked this post
+        boolean isLiked = false;
+        if (currentUser != null) {
+            System.out.println("DEBUG - Checking likes for user ID: " + currentUser.getId() + ", post ID: " + post.getId());
+            isLiked = likeRepository.existsByUserAndPost(currentUser, post);
+            System.out.println("DEBUG - existsByUserAndPost result: " + isLiked);
+            
+            // Also check total like count for this post
+            long likeCount = likeRepository.countByPost(post);
+            System.out.println("DEBUG - Total likes for post #" + post.getId() + ": " + likeCount);
+        }
+        
         return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -130,9 +153,32 @@ public class PostService {
                 .createdAt(post.getCreatedAt())
                 .authorUsername(post.getUser().getActualUsername()) // Use actual username, not email
                 .authorId(post.getUser().getId())
-                .likeCount(0L)  // TODO: Calculate from LikeRepository
-                .commentCount(0L)  // TODO: Calculate from CommentRepository
-                .isLikedByCurrentUser(false)  // TODO: Check from LikeRepository
+                .likeCount(likeRepository.countByPost(post))
+                .commentCount(commentRepository.countByPost(post))
+                .isLikedByCurrentUser(isLiked)
                 .build();
+    }
+    
+    // Helper method to get current logged-in user
+    private User getCurrentUser() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("DEBUG - Authentication object: " + authentication);
+            
+            if (authentication == null || !authentication.isAuthenticated() || 
+                authentication.getPrincipal().equals("anonymousUser")) {
+                System.out.println("DEBUG - No authentication found or anonymous user");
+                return null;
+            }
+            
+            String username = authentication.getName();
+            System.out.println("DEBUG - Authenticated username: " + username);
+            User user = userRepository.findByEmailOrUsername(username, username).orElse(null);
+            System.out.println("DEBUG - Found user: " + (user != null ? user.getUsername() : "null"));
+            return user;
+        } catch (Exception e) {
+            System.out.println("DEBUG - Exception in getCurrentUser: " + e.getMessage());
+            return null;
+        }
     }
 }

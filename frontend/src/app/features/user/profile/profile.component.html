@@ -1,0 +1,111 @@
+<div class="profile-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!isLoading && profile" class="profile-content">
+    <!-- Cover Image -->
+    <div class="cover-image" [style.background-image]="profile.coverImage ? 'url(' + profile.coverImage + ')' : 'none'">
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <!-- Profile Avatar -->
+        <div class="profile-avatar">
+          <div *ngIf="!profile.profilePicture" class="avatar-placeholder">
+            {{ getInitials(profile.username) }}
+          </div>
+          <img *ngIf="profile.profilePicture" [src]="profile.profilePicture" alt="Profile picture">
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info">
+          <h1 class="username">{{ profile.username }}</h1>
+          <p class="join-date">
+            <mat-icon>event</mat-icon>
+            Joined {{ formatJoinDate(profile.createdAt) }}
+          </p>
+          <p *ngIf="profile.bio" class="bio">{{ profile.bio }}</p>
+        </div>
+
+        <!-- Action Button -->
+        <div class="profile-actions">
+          <button 
+            *ngIf="isOwnProfile" 
+            mat-raised-button 
+            color="primary"
+            (click)="editProfile()">
+            <mat-icon>edit</mat-icon>
+            Edit Profile
+          </button>
+          
+          <!-- Follow button (for future implementation) -->
+          <button 
+            *ngIf="!isOwnProfile && authService.isLoggedIn()" 
+            mat-raised-button 
+            color="accent">
+            <mat-icon>person_add</mat-icon>
+            Follow
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="stat">
+          <div class="stat-value">{{ profile.postsCount }}</div>
+          <div class="stat-label">Posts</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">{{ profile.followersCount }}</div>
+          <div class="stat-label">Followers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">{{ profile.followingCount }}</div>
+          <div class="stat-label">Following</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Posts Section -->
+    <div class="profile-posts">
+      <h2 class="section-title">
+        <mat-icon>article</mat-icon>
+        Posts
+      </h2>
+
+      <!-- Loading Posts -->
+      <div *ngIf="isLoadingPosts" class="loading-posts">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <!-- Posts Grid -->
+      <div *ngIf="!isLoadingPosts && posts.length > 0" class="posts-grid">
+        <app-post-card
+          *ngFor="let post of posts"
+          [post]="post"
+          (postDeleted)="onPostDeleted($event)">
+        </app-post-card>
+      </div>
+
+      <!-- No Posts Message -->
+      <div *ngIf="!isLoadingPosts && posts.length === 0" class="no-posts">
+        <mat-icon>article</mat-icon>
+        <h3>No posts yet</h3>
+        <p *ngIf="isOwnProfile">Start sharing your thoughts with the world!</p>
+        <p *ngIf="!isOwnProfile">This user hasn't posted anything yet.</p>
+        <button 
+          *ngIf="isOwnProfile" 
+          mat-raised-button 
+          color="primary"
+          routerLink="/post/create">
+          <mat-icon>add</mat-icon>
+          Create Post
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

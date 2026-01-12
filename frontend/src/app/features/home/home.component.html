@@ -1,0 +1,66 @@
+<div class="home-container">
+  <!-- Welcome Banner -->
+  <div class="welcome-banner">
+    <h1>Welcome to 01Blog</h1>
+    <p>Discover amazing stories and share your thoughts with the community</p>
+    <button mat-raised-button color="accent" routerLink="/post/create">
+      <mat-icon>add</mat-icon>
+      Create Your First Post
+    </button>
+  </div>
+
+  <!-- Posts Feed -->
+  <div class="posts-feed">
+    <div class="feed-header">
+      <h2>
+        <mat-icon>dynamic_feed</mat-icon>
+        Latest Posts
+      </h2>
+      <button mat-icon-button (click)="refreshPosts()" [disabled]="isLoading" matTooltip="Refresh">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    <!-- Loading Spinner (initial load) -->
+    <app-loading-spinner *ngIf="isLoading && posts.length === 0"></app-loading-spinner>
+
+    <!-- Posts List -->
+    <div class="posts-list" *ngIf="posts.length > 0">
+      <app-post-card 
+        *ngFor="let post of posts" 
+        [post]="post"
+        (postDeleted)="onPostDeleted($event)">
+      </app-post-card>
+    </div>
+
+    <!-- No Posts Message -->
+    <div class="no-posts" *ngIf="posts.length === 0 && !isLoading">
+      <mat-icon>article</mat-icon>
+      <h3>No posts yet</h3>
+      <p>Be the first to share something!</p>
+      <button mat-raised-button color="primary" routerLink="/post/create">
+        <mat-icon>add</mat-icon>
+        Create Post
+      </button>
+    </div>
+
+    <!-- Load More Button -->
+    <div class="load-more" *ngIf="hasMorePosts && posts.length > 0">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="loadMorePosts()"
+        [disabled]="isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">expand_more</mat-icon>
+        {{ isLoading ? 'Loading...' : 'Load More Posts' }}
+      </button>
+    </div>
+
+    <!-- End of Posts Message -->
+    <div class="end-message" *ngIf="!hasMorePosts && posts.length > 0">
+      <mat-divider></mat-divider>
+      <p>You've reached the end! 🎉</p>
+    </div>
+  </div>
+</div>

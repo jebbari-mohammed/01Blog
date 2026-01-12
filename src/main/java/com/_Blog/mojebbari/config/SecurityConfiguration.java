@@ -10,8 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import jakarta.servlet.http.HttpServletResponse; 
 import org.springframework.http.MediaType;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -24,27 +28,32 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                // 1. Disable CSRF (we use stateless JWTs)
+                // 1. Enable CORS with our configuration
+                http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+                // 2. Disable CSRF (we use stateless JWTs)
                 http.csrf(csrf -> csrf.disable());
 
-                // 2. Define the "white list" - endpoints that DON'T need authentication
+                // 3. Define the "white list" - endpoints that DON'T need authentication
                 http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**") // All auth routes
+                        .permitAll()
+                        .requestMatchers("/uploads/**") // Allow access to uploaded files
                         .permitAll()
                         .anyRequest() // Any other request...
                         .authenticated() // ...must be authenticated
                 );
 
-                // 3. We use stateless sessions; Spring won't create sessions
+                // 4. We use stateless sessions; Spring won't create sessions
                 http.sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-                // 4. Tell Spring to use our custom beans
+                // 5. Tell Spring to use our custom beans
                 http.authenticationProvider(authenticationProvider);
                 http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
                 
-                // 5. Custom exception handling for authentication/authorization failures
+                // 6. Custom exception handling for authentication/authorization failures
                 http.exceptionHandling(exception -> exception
                     // Handle 403 Forbidden (Authorization failure)
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
@@ -63,5 +72,43 @@ public class SecurityConfiguration {
                 );
 
         return http.build();
+    }
+
+    /**
+     * CORS Configuration - Allows frontend (Angular) to communicate with backend
+     * 
+     * What it does:
+     * - Allows requests from http://localhost:4200 (Angular dev server)
+     * - Allows credentials (cookies, authorization headers)
+     * - Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+     * - Allows all headers
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Allow Angular dev server (both default port and any alternative port)
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:4200",
+            "http://localhost:64266"  // Added for current Angular server
+        ));
+        
+        // Allow credentials (JWT tokens in Authorization header)
+        configuration.setAllowCredentials(true);
+        
+        // Allow all HTTP methods
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        
+        // Allow all headers
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Expose Authorization header to frontend
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        
+        // Apply this configuration to all endpoints
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        
+        return source;
     }
 }

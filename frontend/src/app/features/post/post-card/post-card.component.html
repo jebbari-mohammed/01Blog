@@ -1,0 +1,72 @@
+<mat-card class="post-card">
+  <!-- Post Header -->
+  <mat-card-header>
+    <div mat-card-avatar class="post-avatar">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <mat-card-title>
+      <a [routerLink]="['/profile', post.authorUsername]" class="author-link">
+        {{ post.authorUsername }}
+      </a>
+    </mat-card-title>
+    <mat-card-subtitle>
+      {{ formatDate(post.createdAt) }}
+      <mat-chip *ngIf="post.category" class="category-chip">
+        {{ post.category }}
+      </mat-chip>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <!-- Post Content -->
+  <mat-card-content>
+    <h2 class="post-title">{{ post.title }}</h2>
+    <p class="post-content">{{ post.content }}</p>
+    
+    <!-- Media (if exists) -->
+    <div *ngIf="post.mediaUrl" class="post-image-container">
+      <img 
+        [src]="post.mediaUrl" 
+        alt="Post image" 
+        class="post-image"
+        (error)="onImageError($event)"
+        (load)="onImageLoad()">
+    </div>
+  </mat-card-content>
+
+  <!-- Post Actions -->
+  <mat-card-actions class="post-actions">
+    <div class="actions-left">
+      <!-- Like Button -->
+      <button 
+        mat-button 
+        (click)="toggleLike()"
+        [disabled]="isLiking"
+        [class.liked]="post.isLikedByCurrentUser">
+        <mat-icon>{{ post.isLikedByCurrentUser ? 'favorite' : 'favorite_border' }}</mat-icon>
+        <span>{{ post.likeCount }}</span>
+      </button>
+
+      <!-- Comment Button -->
+      <button mat-button>
+        <mat-icon>comment</mat-icon>
+        <span>{{ post.commentCount }}</span>
+      </button>
+    </div>
+
+    <div class="actions-right">
+      <!-- Delete Button (only if user can delete) -->
+      <button 
+        *ngIf="canDelete()"
+        mat-icon-button 
+        color="warn"
+        (click)="deletePost()"
+        [disabled]="isDeleting"
+        matTooltip="Delete post">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-card-actions>
+
+  <!-- Comments Section -->
+  <app-comments [postId]="post.id"></app-comments>
+</mat-card>

@@ -1,0 +1,80 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <!-- Card Header -->
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>login</mat-icon>
+        Login to 01Blog
+      </mat-card-title>
+      <mat-card-subtitle>Welcome back! Please login to continue.</mat-card-subtitle>
+    </mat-card-header>
+
+    <!-- Card Content -->
+    <mat-card-content>
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email or Username Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email or Username</mat-label>
+          <input 
+            matInput 
+            type="text" 
+            formControlName="identifier"
+            placeholder="Enter your email or username"
+            autocomplete="username">
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="loginForm.get('identifier')?.invalid">
+            {{ getEmailErrorMessage() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Password Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input 
+            matInput 
+            [type]="hidePassword ? 'password' : 'text'" 
+            formControlName="password"
+            placeholder="Enter your password"
+            autocomplete="current-password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.get('password')?.invalid">
+            {{ getPasswordErrorMessage() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Submit Button -->
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          class="full-width submit-button"
+          [disabled]="isLoading">
+          <mat-icon *ngIf="!isLoading">login</mat-icon>
+          <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+          {{ isLoading ? 'Logging in...' : 'Login' }}
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <mat-divider class="divider"></mat-divider>
+
+      <!-- Register Link -->
+      <div class="register-link">
+        <p>Don't have an account?</p>
+        <a mat-button color="accent" routerLink="/auth/register">
+          Create Account
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

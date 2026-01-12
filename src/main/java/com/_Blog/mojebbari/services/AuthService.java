@@ -24,70 +24,76 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    // --- REGISTER ---
+    // Register a new user
     public AuthenticationResponse register(RegisterRequest request) {
-        // 1. Create the user object from the request
-        var user = User.builder()
-                .username(request.getUsername()) // In your case, this might be a display name
+        // Step 1: Create new user with hashed password
+        User user = User.builder()
+                .username(request.getUsername())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword())) // Hash the password!
-                .role(Role.USER) // Default role is always USER
+                .password(passwordEncoder.encode(request.getPassword())) // Encrypt password
+                .role(Role.USER) // Everyone starts as regular user
                 .build();
 
-        // 2. Save to database
+        // Step 2: Save user to database
         userRepository.save(user);
 
-        // 3. Generate tokens for them immediately
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        // Step 3: Create tokens for the user
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        // 4. Return both tokens
+        // Step 4: Return tokens
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .token(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    // --- LOGIN ---
-public AuthenticationResponse login(LoginRequest request) {
-        // 1. Try to authenticate
+    // Login existing user
+    public AuthenticationResponse login(LoginRequest request) {
+        // Step 1: Check if username/email and password are correct
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getIdentifier(), // Use the generic identifier
+                        request.getIdentifier(), // Can be email or username
                         request.getPassword()
                 )
         );
 
-        // 2. Find the user in the DB (check both columns)
-        var user = userRepository.findByEmailOrUsername(request.getIdentifier(), request.getIdentifier())
+        // Step 2: Find user in database
+        User user = userRepository.findByEmailOrUsername(request.getIdentifier(), request.getIdentifier())
                 .orElseThrow();
 
-        // 3. Generate tokens (The token will still contain the user's Email as the subject, 
-        //    because user.getUsername() in your User model returns the email. This is good!)
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        // Step 3: Create tokens
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
+        // Step 4: Return tokens
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .token(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
     
-    // --- REFRESH TOKEN ---
+    // Get new access token using refresh token
     public AuthenticationResponse refreshToken(String refreshToken) {
-        String username = jwtService.extractUsername(refreshToken);
-        var user = userRepository.findByEmailOrUsername(username, username)
+        // Step 1: Get user email from refresh token
+        String userEmail = jwtService.extractUsername(refreshToken);
+        
+        // Step 2: Find user
+        User user = userRepository.findByEmailOrUsername(userEmail, userEmail)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         
+        // Step 3: Check if refresh token is valid
         if (!jwtService.isTokenValid(refreshToken, user)) {
             throw new BadCredentialsException("Invalid refresh token");
         }
         
-        var newAccessToken = jwtService.generateToken(user);
+        // Step 4: Create new access token
+        String newAccessToken = jwtService.generateToken(user);
         
+        // Step 5: Return new access token with same refresh token
         return AuthenticationResponse.builder()
                 .token(newAccessToken)
-                .refreshToken(refreshToken) // Return same refresh token
+                .refreshToken(refreshToken)
                 .build();
     }
 }

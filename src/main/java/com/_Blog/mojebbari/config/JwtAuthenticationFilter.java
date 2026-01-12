@@ -40,28 +40,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 2. Extract the token
-        jwt = authHeader.substring(7); // "Bearer " is 7 chars
-        userEmail = jwtService.extractUsername(jwt); // Extract email from token
-
-        // 3. If we have a user and they aren't already authenticated...
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
+            // 2. Extract the token
+            jwt = authHeader.substring(7); // "Bearer " is 7 chars
             
-            // 4. Get the user from the database
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            // 5. If the token is valid...
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                
-                // 6. Update Spring Security's context (log them in)
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            // Check if JWT is not empty
+            if (jwt.trim().isEmpty()) {
+                filterChain.doFilter(request, response);
+                return;
             }
+            
+            userEmail = jwtService.extractUsername(jwt); // Extract email from token
+
+            // 3. If we have a user and they aren't already authenticated...
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                
+                // 4. Get the user from the database
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                // 5. If the token is valid...
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    
+                    // 6. Update Spring Security's context (log them in)
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+        } catch (Exception e) {
+            // Log the error but don't crash - just continue without authentication
+            System.out.println("JWT Authentication error: " + e.getMessage());
         }
         
         filterChain.doFilter(request, response); // Continue the filter chain

@@ -94,19 +94,6 @@ public class CommentController {
     }
 
     /**
-     * Get comments by user (for user profile page)
-     * GET /api/users/{userId}/comments
-     * 
-     * Example: GET /api/users/3/comments
-     * Response: List of CommentResponse objects
-     */
-    @GetMapping("/users/{userId}/comments")
-    public ResponseEntity<List<CommentResponse>> getCommentsByUser(@PathVariable Long userId) {
-        List<CommentResponse> comments = commentService.getCommentsByUser(userId);
-        return ResponseEntity.ok(comments);
-    }
-
-    /**
      * Get comment count for a post
      * GET /api/posts/{postId}/comments/count
      * 

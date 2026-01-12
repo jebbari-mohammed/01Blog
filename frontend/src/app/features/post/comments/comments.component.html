@@ -1,0 +1,108 @@
+<div class="comments-container">
+  <!-- Comments Toggle Button -->
+  <button 
+    mat-button 
+    class="toggle-comments-btn"
+    (click)="toggleComments()">
+    <mat-icon>{{ showComments ? 'expand_less' : 'expand_more' }}</mat-icon>
+    {{ showComments ? 'Hide' : 'Show' }} Comments ({{ comments.length }})
+  </button>
+
+  <!-- Comments Section (shown when toggled) -->
+  <div *ngIf="showComments" class="comments-section">
+    <!-- Add Comment Form (only if logged in) -->
+    <div *ngIf="authService.isLoggedIn()" class="add-comment-form">
+      <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ editingCommentId ? 'Update comment' : 'Add a comment' }}</mat-label>
+          <textarea 
+            matInput 
+            formControlName="text"
+            placeholder="Share your thoughts..."
+            rows="3"
+            maxlength="500">
+          </textarea>
+          <mat-hint align="end">
+            {{commentForm.get('text')?.value?.length || 0}}/500
+          </mat-hint>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="commentForm.invalid || isSubmitting">
+            <mat-icon>{{ editingCommentId ? 'edit' : 'send' }}</mat-icon>
+            {{ editingCommentId ? 'Update' : 'Comment' }}
+          </button>
+          
+          <button 
+            *ngIf="editingCommentId"
+            mat-button 
+            type="button"
+            (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Login Message (if not logged in) -->
+    <div *ngIf="!authService.isLoggedIn()" class="login-message">
+      <mat-icon>info</mat-icon>
+      <p>Please <a routerLink="/auth/login">login</a> to comment</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-comments">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading comments...</p>
+    </div>
+
+    <!-- Comments List -->
+    <div *ngIf="!isLoading" class="comments-list">
+      <!-- Empty State -->
+      <div *ngIf="comments.length === 0" class="empty-comments">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <p>No comments yet. Be the first to comment!</p>
+      </div>
+
+      <!-- Comment Items -->
+      <div *ngFor="let comment of comments" class="comment-item">
+        <div class="comment-header">
+          <div class="comment-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="comment-info">
+            <span class="comment-username">{{ comment.username }}</span>
+            <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+          </div>
+          
+          <!-- Edit/Delete Actions -->
+          <div *ngIf="canEditComment(comment)" class="comment-actions">
+            <button 
+              mat-icon-button 
+              (click)="editComment(comment)"
+              matTooltip="Edit comment">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              color="warn"
+              (click)="deleteComment(comment.id)"
+              matTooltip="Delete comment">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        
+        <div class="comment-text">
+          {{ comment.text }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
