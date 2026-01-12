@@ -62,11 +62,11 @@
           <div class="stat-value">{{ profile.postsCount }}</div>
           <div class="stat-label">Posts</div>
         </div>
-        <div class="stat">
+        <div class="stat clickable" (click)="showFollowers()" matTooltip="View followers">
           <div class="stat-value">{{ profile.followersCount }}</div>
           <div class="stat-label">Followers</div>
         </div>
-        <div class="stat">
+        <div class="stat clickable" (click)="showFollowing()" matTooltip="View following">
           <div class="stat-value">{{ profile.followingCount }}</div>
           <div class="stat-label">Following</div>
         </div>

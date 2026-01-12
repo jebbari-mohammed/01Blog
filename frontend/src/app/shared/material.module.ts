@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 // Buttons
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 // Layout
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -42,6 +43,7 @@ import { MatDividerModule } from '@angular/material/divider';
 const materialModules = [
   MatButtonModule,
   MatIconModule,
+  MatButtonToggleModule,
   MatToolbarModule,
   MatSidenavModule,
   MatCardModule,

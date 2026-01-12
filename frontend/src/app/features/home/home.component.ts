@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../shared/material.module';
+import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Post } from '../../core/models/post.model';
@@ -97,8 +98,19 @@ export class HomeComponent implements OnInit {
   /**
    * Switch between Following and Discover feeds
    */
-  switchFeed(mode: 'following' | 'discover'): void {
+  switchFeed(event: MatButtonToggleChange): void {
+    const mode = event.value as 'following' | 'discover';
     if (this.feedMode === mode) return; // Already on this feed
+    
+    this.feedMode = mode;
+    this.refreshPosts();
+  }
+
+  /**
+   * Switch feed mode directly (used by buttons)
+   */
+  switchFeedMode(mode: 'following' | 'discover'): void {
+    if (this.feedMode === mode) return;
     
     this.feedMode = mode;
     this.refreshPosts();

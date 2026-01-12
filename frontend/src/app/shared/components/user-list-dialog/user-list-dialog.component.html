@@ -1,0 +1,54 @@
+<div class="user-list-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <button mat-icon-button (click)="close()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- User List -->
+  <mat-dialog-content>
+    <div *ngIf="users.length > 0" class="users-container">
+      <div *ngFor="let user of users" class="user-card">
+        <!-- User Avatar and Info -->
+        <div class="user-info" (click)="viewProfile(user.username)">
+          <div class="avatar">
+            <div *ngIf="!user.profilePicture" class="avatar-placeholder">
+              {{ getInitials(user.username) }}
+            </div>
+            <img *ngIf="user.profilePicture" [src]="getFullImageUrl(user.profilePicture)" [alt]="user.username">
+          </div>
+          <div class="user-details">
+            <h3 class="username">{{ user.username }}</h3>
+            <p *ngIf="user.bio" class="bio">{{ user.bio }}</p>
+            <p *ngIf="!user.bio" class="no-bio">No bio yet</p>
+          </div>
+        </div>
+
+        <!-- Follow/Unfollow Button -->
+        <div class="action-button">
+          <button 
+            *ngIf="!isCurrentUser(user.id)"
+            mat-raised-button 
+            [color]="user.isFollowing ? 'warn' : 'accent'"
+            (click)="toggleFollow(user)"
+            [disabled]="isLoading[user.id]">
+            <mat-spinner *ngIf="isLoading[user.id]" diameter="20"></mat-spinner>
+            <span *ngIf="!isLoading[user.id]">
+              {{ user.isFollowing ? 'Unfollow' : 'Follow' }}
+            </span>
+          </button>
+          <span *ngIf="isCurrentUser(user.id)" class="you-badge">You</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="users.length === 0" class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h3>No users yet</h3>
+      <p>{{ data.title === 'Followers' ? 'No one is following this user yet.' : 'This user is not following anyone yet.' }}</p>
+    </div>
+  </mat-dialog-content>
+</div>

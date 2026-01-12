@@ -25,7 +25,7 @@
     <mat-button-toggle-group 
       *ngIf="authService.isLoggedIn()" 
       [value]="feedMode" 
-      (change)="switchFeed($event.value)"
+      (change)="switchFeed($event)"
       class="feed-toggle">
       <mat-button-toggle value="following">
         <mat-icon>people</mat-icon>
@@ -60,7 +60,7 @@
         *ngIf="feedMode === 'following'" 
         mat-raised-button 
         color="accent" 
-        (click)="switchFeed('discover')">
+        (click)="switchFeedMode('discover')">
         <mat-icon>explore</mat-icon>
         Discover Users
       </button>

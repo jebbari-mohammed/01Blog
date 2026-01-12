@@ -60,9 +60,9 @@ public class UserService {
                 .profilePicture(user.getProfilePicture())
                 .coverImage(user.getCoverImage())
                 .createdAt(user.getCreatedAt())
-                .followerCount(followerCount)
+                .followersCount(followerCount)
                 .followingCount(followingCount)
-                .postCount(postCount)
+                .postsCount(postCount)
                 .isFollowing(isFollowing)
                 .isOwnProfile(isOwnProfile)
                 .build();

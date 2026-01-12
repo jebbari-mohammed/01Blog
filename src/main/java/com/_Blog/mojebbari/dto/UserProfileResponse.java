@@ -34,9 +34,9 @@ public class UserProfileResponse {
     private LocalDateTime createdAt;
     
     // Computed fields (not in User entity)
-    private long followerCount;    // How many followers this user has
+    private long followersCount;   // How many followers this user has
     private long followingCount;   // How many users this user follows
-    private int postCount;          // How many posts this user has
+    private int postsCount;        // How many posts this user has
     
     /**
      * Whether the current logged-in user is following this profile

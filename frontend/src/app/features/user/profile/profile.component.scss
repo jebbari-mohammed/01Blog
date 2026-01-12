@@ -129,6 +129,7 @@
 
   .stat {
     text-align: center;
+    transition: transform 0.2s;
 
     .stat-value {
       font-size: 1.8rem;
@@ -140,6 +141,27 @@
       font-size: 0.9rem;
       color: #666;
       margin-top: 0.25rem;
+    }
+
+    // Add hover effect for clickable stats
+    &.clickable {
+      cursor: pointer;
+      
+      &:hover {
+        transform: scale(1.05);
+        
+        .stat-value {
+          color: #667eea;
+        }
+        
+        .stat-label {
+          color: #667eea;
+        }
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
     }
   }
 }

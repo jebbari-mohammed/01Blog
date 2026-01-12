@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../shared/material.module';
+import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../core/services/user.service';
 import { PostService } from '../../../core/services/post.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -9,6 +10,7 @@ import { SubscriptionService } from '../../../core/services/subscription.service
 import { UserProfileResponse } from '../../../core/models/user.model';
 import { Post } from '../../../core/models/post.model';
 import { PostCardComponent } from '../../post/post-card/post-card.component';
+import { UserListDialogComponent } from '../../../shared/components/user-list-dialog/user-list-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../../environments/environment';
 
@@ -50,6 +52,7 @@ export class ProfileComponent implements OnInit {
     private postService: PostService,
     public authService: AuthService,
     private subscriptionService: SubscriptionService,
+    private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
 
@@ -226,6 +229,64 @@ export class ProfileComponent implements OnInit {
    */
   editProfile(): void {
     this.router.navigate(['/profile/edit']);
+  }
+
+  /**
+   * Open followers list dialog
+   */
+  showFollowers(): void {
+    if (!this.profile) return;
+
+    this.subscriptionService.getUserFollowers(this.profile.id).subscribe({
+      next: (followers) => {
+        const currentUser = this.authService.getCurrentUser();
+        this.dialog.open(UserListDialogComponent, {
+          width: '500px',
+          maxWidth: '90vw',
+          data: {
+            title: 'Followers',
+            users: followers,
+            currentUserId: currentUser?.id || 0
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading followers:', error);
+        this.snackBar.open('Failed to load followers', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  /**
+   * Open following list dialog
+   */
+  showFollowing(): void {
+    if (!this.profile) return;
+
+    this.subscriptionService.getUserFollowing(this.profile.id).subscribe({
+      next: (following) => {
+        const currentUser = this.authService.getCurrentUser();
+        this.dialog.open(UserListDialogComponent, {
+          width: '500px',
+          maxWidth: '90vw',
+          data: {
+            title: 'Following',
+            users: following,
+            currentUserId: currentUser?.id || 0
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading following:', error);
+        this.snackBar.open('Failed to load following', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 
   /**
