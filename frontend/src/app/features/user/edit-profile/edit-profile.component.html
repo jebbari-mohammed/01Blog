@@ -1,0 +1,172 @@
+<div class="edit-profile-container">
+  <mat-card class="edit-profile-card">
+    <!-- Header -->
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>edit</mat-icon>
+        Edit Profile
+      </mat-card-title>
+      <mat-card-subtitle>Customize your profile</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Cover Image Section -->
+        <div class="image-section">
+          <h3>
+            <mat-icon>wallpaper</mat-icon>
+            Cover Image
+          </h3>
+          
+          <input 
+            type="file" 
+            #coverInput 
+            (change)="onCoverImageSelected($event)"
+            accept="image/*"
+            style="display: none;">
+
+          <div *ngIf="!coverImagePreview" class="upload-placeholder cover-placeholder">
+            <mat-icon>add_photo_alternate</mat-icon>
+            <p>Add a cover image</p>
+            <button 
+              mat-stroked-button 
+              type="button"
+              (click)="coverInput.click()"
+              [disabled]="isUploadingCover">
+              {{ isUploadingCover ? 'Uploading...' : 'Choose Image' }}
+            </button>
+          </div>
+
+          <div *ngIf="coverImagePreview" class="image-preview-container cover-preview">
+            <img 
+              [src]="coverImagePreview" 
+              alt="Cover preview"
+              (load)="onImageLoad('cover')"
+              (error)="onImageError('cover', $event)">
+            <button 
+              mat-icon-button 
+              color="warn"
+              type="button"
+              (click)="removeCoverImage()"
+              class="remove-btn"
+              [disabled]="isUploadingCover">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <mat-progress-bar 
+            *ngIf="isUploadingCover" 
+            mode="indeterminate">
+          </mat-progress-bar>
+        </div>
+
+        <!-- Profile Picture Section -->
+        <div class="image-section">
+          <h3>
+            <mat-icon>account_circle</mat-icon>
+            Profile Picture
+          </h3>
+          
+          <input 
+            type="file" 
+            #profileInput 
+            (change)="onProfileImageSelected($event)"
+            accept="image/*"
+            style="display: none;">
+
+          <div *ngIf="!profileImagePreview" class="upload-placeholder profile-placeholder">
+            <mat-icon>add_a_photo</mat-icon>
+            <p>Add a profile picture</p>
+            <button 
+              mat-stroked-button 
+              type="button"
+              (click)="profileInput.click()"
+              [disabled]="isUploadingProfile">
+              {{ isUploadingProfile ? 'Uploading...' : 'Choose Image' }}
+            </button>
+          </div>
+
+          <div *ngIf="profileImagePreview" class="image-preview-container profile-preview">
+            <img 
+              [src]="profileImagePreview" 
+              alt="Profile preview"
+              (load)="onImageLoad('profile')"
+              (error)="onImageError('profile', $event)">
+            <button 
+              mat-icon-button 
+              color="warn"
+              type="button"
+              (click)="removeProfileImage()"
+              class="remove-btn"
+              [disabled]="isUploadingProfile">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <mat-progress-bar 
+            *ngIf="isUploadingProfile" 
+            mode="indeterminate">
+          </mat-progress-bar>
+        </div>
+
+        <!-- Username Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Username</mat-label>
+          <input 
+            matInput 
+            formControlName="username"
+            placeholder="Enter your username"
+            maxlength="20">
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-hint align="end">
+            {{profileForm.get('username')?.value?.length || 0}}/20
+          </mat-hint>
+          <mat-error *ngIf="profileForm.get('username')?.invalid">
+            {{ getUsernameError() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Bio Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Bio</mat-label>
+          <textarea 
+            matInput 
+            formControlName="bio"
+            placeholder="Tell us about yourself..."
+            rows="4"
+            maxlength="500">
+          </textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint align="end">
+            {{profileForm.get('bio')?.value?.length || 0}}/500
+          </mat-hint>
+          <mat-error *ngIf="profileForm.get('bio')?.invalid">
+            {{ getBioError() }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="profileForm.invalid || isLoading || isUploadingProfile || isUploadingCover">
+            <mat-icon>save</mat-icon>
+            {{ isLoading ? 'Saving...' : 'Save Changes' }}
+          </button>
+          
+          <button 
+            mat-stroked-button 
+            type="button"
+            (click)="onCancel()"
+            [disabled]="isLoading">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

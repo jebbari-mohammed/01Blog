@@ -49,8 +49,11 @@ export class NavbarComponent implements OnInit {
    * Navigate to current user's profile
    */
   goToProfile(): void {
-    if (this.currentUser) {
+    if (this.currentUser && this.currentUser.username) {
       this.router.navigate(['/profile', this.currentUser.username]);
+    } else {
+      console.error('Cannot navigate to profile: username is not available');
+      // You could show a snackbar message to the user here
     }
   }
 }

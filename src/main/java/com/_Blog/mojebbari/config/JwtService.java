@@ -1,5 +1,6 @@
 package com._Blog.mojebbari.config;
 
+import com._Blog.mojebbari.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -39,7 +40,17 @@ public class JwtService {
 
     // 3. Methods to generate a new token
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        
+        // Add custom claims if userDetails is our User entity
+        if (userDetails instanceof User) {
+            User user = (User) userDetails;
+            extraClaims.put("userId", user.getId());
+            extraClaims.put("username", user.getUsername());
+            extraClaims.put("role", user.getRole().name());
+        }
+        
+        return generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

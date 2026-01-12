@@ -34,9 +34,9 @@ export class UserService {
 
   /**
    * Update current user's profile
-   * PUT /api/users/profile
+   * PUT /api/users/me
    */
   updateProfile(request: UpdateProfileRequest): Observable<UserProfileResponse> {
-    return this.http.put<UserProfileResponse>(`${this.apiUrl}/profile`, request);
+    return this.http.put<UserProfileResponse>(`${this.apiUrl}/me`, request);
   }
 }

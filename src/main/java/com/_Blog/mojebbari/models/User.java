@@ -67,14 +67,14 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        // Spring Security will use this (our email) to authenticate
-        // You could also use the 'username' field
-        return email;
+        // Return the actual username field (not email)
+        // Spring Security will use this for authentication
+        return username;
     }
     
-    // Custom method to get the actual username field (not email)
-    public String getActualUsername() {
-        return username;
+    // Getter for email
+    public String getEmail() {
+        return email;
     }
 
     @Override

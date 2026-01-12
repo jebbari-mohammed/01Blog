@@ -189,7 +189,7 @@ public class SubscriptionService {
     private UserSummaryResponse mapToUserSummary(User user, boolean isFollowing) {
         return UserSummaryResponse.builder()
                 .id(user.getId())
-                .username(user.getActualUsername()) // Use actual username, not email
+                .username(user.getUsername()) // Use actual username, not email
                 .bio(user.getBio())
                 .profilePicture(user.getProfilePicture())
                 .isFollowing(isFollowing)

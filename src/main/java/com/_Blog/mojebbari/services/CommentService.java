@@ -201,7 +201,7 @@ public class CommentService {
                 .text(comment.getText())
                 .postId(comment.getPost().getId())
                 .authorId(author.getId())
-                .authorUsername(author.getActualUsername())
+                .authorUsername(author.getUsername())
                 .authorProfilePicture(author.getProfilePicture())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())

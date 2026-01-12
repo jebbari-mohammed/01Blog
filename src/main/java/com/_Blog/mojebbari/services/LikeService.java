@@ -168,7 +168,7 @@ public class LikeService {
         
         return LikeResponse.builder()
                 .userId(user.getId())
-                .username(user.getActualUsername()) // Use actual username, not email
+                .username(user.getUsername()) // Use actual username, not email
                 .profilePicture(user.getProfilePicture())
                 .likedAt(like.getCreatedAt())
                 .build();

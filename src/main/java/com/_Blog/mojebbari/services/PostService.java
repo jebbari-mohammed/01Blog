@@ -130,7 +130,7 @@ public class PostService {
         // Get current logged-in user (if any)
         User currentUser = getCurrentUser();
         System.out.println("DEBUG - MapToResponse for post #" + post.getId() + ", currentUser: " + 
-                          (currentUser != null ? currentUser.getActualUsername() + " (ID: " + currentUser.getId() + ")" : "null"));
+                          (currentUser != null ? currentUser.getUsername() + " (ID: " + currentUser.getId() + ")" : "null"));
         
         // Check if current user has liked this post
         boolean isLiked = false;
@@ -151,7 +151,7 @@ public class PostService {
                 .category(post.getCategory())
                 .mediaUrl(post.getMediaUrl())
                 .createdAt(post.getCreatedAt())
-                .authorUsername(post.getUser().getActualUsername()) // Use actual username, not email
+                .authorUsername(post.getUser().getUsername()) // Use actual username, not email
                 .authorId(post.getUser().getId())
                 .likeCount(likeRepository.countByPost(post))
                 .commentCount(commentRepository.countByPost(post))

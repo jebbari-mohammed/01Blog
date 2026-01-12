@@ -9,6 +9,7 @@ import { UserProfileResponse } from '../../../core/models/user.model';
 import { Post } from '../../../core/models/post.model';
 import { PostCardComponent } from '../../post/post-card/post-card.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from '../../../../environments/environment';
 
 /**
  * ProfileComponent - Display user profile with their posts
@@ -64,6 +65,14 @@ export class ProfileComponent implements OnInit {
     this.isLoading = true;
     this.userService.getUserProfile(this.username).subscribe({
       next: (profile) => {
+        // Convert relative image URLs to absolute URLs
+        if (profile.profilePicture) {
+          profile.profilePicture = this.getFullImageUrl(profile.profilePicture);
+        }
+        if (profile.coverImage) {
+          profile.coverImage = this.getFullImageUrl(profile.coverImage);
+        }
+        
         this.profile = profile;
         this.isLoading = false;
         
@@ -124,7 +133,7 @@ export class ProfileComponent implements OnInit {
    * Navigate to edit profile
    */
   editProfile(): void {
-    this.router.navigate(['/profile', this.username, 'edit']);
+    this.router.navigate(['/profile/edit']);
   }
 
   /**
@@ -142,5 +151,13 @@ export class ProfileComponent implements OnInit {
       year: 'numeric', 
       month: 'long'
     });
+  }
+
+  /**
+   * Get full image URL
+   */
+  private getFullImageUrl(url: string): string {
+    if (url.startsWith('http')) return url;
+    return `${environment.apiUrl.replace('/api', '')}${url}`;
   }
 }
