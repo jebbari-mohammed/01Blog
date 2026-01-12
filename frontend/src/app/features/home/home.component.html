@@ -14,12 +14,28 @@
     <div class="feed-header">
       <h2>
         <mat-icon>dynamic_feed</mat-icon>
-        Latest Posts
+        {{ feedMode === 'following' ? 'Following' : 'Discover' }}
       </h2>
       <button mat-icon-button (click)="refreshPosts()" [disabled]="isLoading" matTooltip="Refresh">
         <mat-icon>refresh</mat-icon>
       </button>
     </div>
+
+    <!-- Feed Tabs (only show for logged-in users) -->
+    <mat-button-toggle-group 
+      *ngIf="authService.isLoggedIn()" 
+      [value]="feedMode" 
+      (change)="switchFeed($event.value)"
+      class="feed-toggle">
+      <mat-button-toggle value="following">
+        <mat-icon>people</mat-icon>
+        Following
+      </mat-button-toggle>
+      <mat-button-toggle value="discover">
+        <mat-icon>explore</mat-icon>
+        Discover
+      </mat-button-toggle>
+    </mat-button-toggle-group>
 
     <!-- Loading Spinner (initial load) -->
     <app-loading-spinner *ngIf="isLoading && posts.length === 0"></app-loading-spinner>
@@ -36,9 +52,23 @@
     <!-- No Posts Message -->
     <div class="no-posts" *ngIf="posts.length === 0 && !isLoading">
       <mat-icon>article</mat-icon>
-      <h3>No posts yet</h3>
-      <p>Be the first to share something!</p>
-      <button mat-raised-button color="primary" routerLink="/post/create">
+      <h3 *ngIf="feedMode === 'discover'">No posts yet</h3>
+      <h3 *ngIf="feedMode === 'following'">Your feed is empty</h3>
+      <p *ngIf="feedMode === 'discover'">Be the first to share something!</p>
+      <p *ngIf="feedMode === 'following'">Follow users to see their posts here</p>
+      <button 
+        *ngIf="feedMode === 'following'" 
+        mat-raised-button 
+        color="accent" 
+        (click)="switchFeed('discover')">
+        <mat-icon>explore</mat-icon>
+        Discover Users
+      </button>
+      <button 
+        *ngIf="feedMode === 'discover'" 
+        mat-raised-button 
+        color="primary" 
+        routerLink="/post/create">
         <mat-icon>add</mat-icon>
         Create Post
       </button>

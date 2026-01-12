@@ -42,13 +42,16 @@
             Edit Profile
           </button>
           
-          <!-- Follow button (for future implementation) -->
+          <!-- Follow/Unfollow button -->
           <button 
             *ngIf="!isOwnProfile && authService.isLoggedIn()" 
             mat-raised-button 
-            color="accent">
-            <mat-icon>person_add</mat-icon>
-            Follow
+            [color]="isFollowing ? 'warn' : 'accent'"
+            (click)="toggleFollow()"
+            [disabled]="isFollowLoading">
+            <mat-icon>{{ isFollowing ? 'person_remove' : 'person_add' }}</mat-icon>
+            <span *ngIf="!isFollowLoading">{{ isFollowing ? 'Unfollow' : 'Follow' }}</span>
+            <mat-spinner *ngIf="isFollowLoading" diameter="20" style="display: inline-block; margin-left: 8px;"></mat-spinner>
           </button>
         </div>
       </div>

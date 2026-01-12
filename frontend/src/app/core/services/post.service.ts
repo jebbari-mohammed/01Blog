@@ -58,6 +58,22 @@ export class PostService {
   }
 
   /**
+   * Get personalized feed (posts from followed users only)
+   * GET /api/posts/feed?page=0&size=10&sortBy=createdAt
+   * 
+   * This endpoint returns only posts from users that the current logged-in user follows.
+   * Requires authentication.
+   */
+  getFeedPosts(page: number = 0, size: number = 10, sortBy: string = 'createdAt'): Observable<PaginatedPostsResponse> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy);
+
+    return this.http.get<PaginatedPostsResponse>(`${this.apiUrl}/feed`, { params });
+  }
+
+  /**
    * Get posts by a specific user
    * GET /api/posts/user/{username}
    */

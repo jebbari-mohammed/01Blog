@@ -48,6 +48,23 @@ public class PostController {
         return ResponseEntity.ok(postService.getAllPosts(pageRequest));
     }
 
+    // GET /api/posts/feed - Get personalized feed from followed users
+    @GetMapping("/feed")
+    public ResponseEntity<Page<PostResponse>> getFollowedUsersFeed(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDirection,
+            Principal principal
+    ) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("ASC") 
+            ? Sort.Direction.ASC 
+            : Sort.Direction.DESC;
+        
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        return ResponseEntity.ok(postService.getFollowedUsersPosts(principal.getName(), pageRequest));
+    }
+
     // GET /api/posts/user/{username} - Get user's posts
     @GetMapping("/user/{username}")
     public ResponseEntity<List<PostResponse>> getUserPosts(@PathVariable String username) {

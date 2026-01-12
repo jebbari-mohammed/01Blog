@@ -59,6 +59,22 @@
       }
     }
   }
+
+  .feed-toggle {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    
+    mat-button-toggle {
+      flex: 1;
+      max-width: 200px;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
 }
 
 .posts-list {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../shared/material.module';
 import { PostService } from '../../core/services/post.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Post } from '../../core/models/post.model';
 import { PostCardComponent } from '../post/post-card/post-card.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -10,9 +11,11 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 /**
  * HomeComponent - Main homepage showing post feed
  * 
- * What it does:
+ * Features:
  * 1. Fetches posts from backend with pagination
- * 2. Displays posts in a feed
+ * 2. Two feed modes:
+ *    - Following: Shows posts from users you follow (personalized feed)
+ *    - Discover: Shows all posts (public feed)
  * 3. Handles pagination (load more)
  * 4. Shows loading state
  * 5. Shows "Create Post" button for logged-in users
@@ -44,20 +47,36 @@ export class HomeComponent implements OnInit {
   totalPages = 0;
   hasMorePosts = true;
 
-  constructor(private postService: PostService) {}
+  // Feed mode: 'following' or 'discover'
+  feedMode: 'following' | 'discover' = 'following';
+
+  constructor(
+    private postService: PostService,
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     // Load posts when component initializes
+    // If user is logged in, show following feed by default
+    // If user is not logged in, show discover feed
+    if (!this.authService.isLoggedIn()) {
+      this.feedMode = 'discover';
+    }
     this.loadPosts();
   }
 
   /**
-   * Load posts from backend
+   * Load posts from backend based on current feed mode
    */
   loadPosts(): void {
     this.isLoading = true;
 
-    this.postService.getAllPosts(this.currentPage, this.pageSize, 'createdAt').subscribe({
+    // Choose which endpoint to call based on feed mode
+    const postsObservable = this.feedMode === 'following'
+      ? this.postService.getFeedPosts(this.currentPage, this.pageSize, 'createdAt')
+      : this.postService.getAllPosts(this.currentPage, this.pageSize, 'createdAt');
+
+    postsObservable.subscribe({
       next: (response) => {
         // Add new posts to existing array
         this.posts = [...this.posts, ...response.content];
@@ -73,6 +92,16 @@ export class HomeComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /**
+   * Switch between Following and Discover feeds
+   */
+  switchFeed(mode: 'following' | 'discover'): void {
+    if (this.feedMode === mode) return; // Already on this feed
+    
+    this.feedMode = mode;
+    this.refreshPosts();
   }
 
   /**

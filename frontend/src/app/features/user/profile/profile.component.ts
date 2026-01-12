@@ -5,6 +5,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { UserService } from '../../../core/services/user.service';
 import { PostService } from '../../../core/services/post.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { SubscriptionService } from '../../../core/services/subscription.service';
 import { UserProfileResponse } from '../../../core/models/user.model';
 import { Post } from '../../../core/models/post.model';
 import { PostCardComponent } from '../../post/post-card/post-card.component';
@@ -18,7 +19,7 @@ import { environment } from '../../../../environments/environment';
  * - User info (avatar, bio, stats)
  * - User's posts feed
  * - Edit profile button (if own profile)
- * - Follow/Unfollow button (if not own profile)
+ * - Follow/Unfollow button (if not own profile) ✅
  */
 @Component({
   selector: 'app-profile',
@@ -39,6 +40,8 @@ export class ProfileComponent implements OnInit {
   isLoadingPosts = true;
   username: string = '';
   isOwnProfile = false;
+  isFollowing = false;
+  isFollowLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,6 +49,7 @@ export class ProfileComponent implements OnInit {
     private userService: UserService,
     private postService: PostService,
     public authService: AuthService,
+    private subscriptionService: SubscriptionService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -79,6 +83,11 @@ export class ProfileComponent implements OnInit {
         // Check if this is the current user's profile
         const currentUser = this.authService.getCurrentUser();
         this.isOwnProfile = currentUser?.username === this.username;
+        
+        // Check follow status if not own profile
+        if (!this.isOwnProfile && profile.id) {
+          this.checkFollowStatus(profile.id);
+        }
       },
       error: (error) => {
         this.isLoading = false;
@@ -126,6 +135,89 @@ export class ProfileComponent implements OnInit {
     // Update post count
     if (this.profile) {
       this.profile.postsCount--;
+    }
+  }
+
+  /**
+   * Check if current user is following this profile user
+   */
+  private checkFollowStatus(userId: number): void {
+    this.subscriptionService.isFollowing(userId).subscribe({
+      next: (isFollowing) => {
+        this.isFollowing = isFollowing;
+      },
+      error: (error) => {
+        console.error('Error checking follow status:', error);
+      }
+    });
+  }
+
+  /**
+   * Toggle follow/unfollow for this user
+   */
+  toggleFollow(): void {
+    if (!this.profile || this.isFollowLoading) return;
+
+    this.isFollowLoading = true;
+
+    if (this.isFollowing) {
+      // Unfollow
+      this.subscriptionService.unfollowUser(this.profile.id).subscribe({
+        next: () => {
+          this.isFollowing = false;
+          this.isFollowLoading = false;
+          
+          // Update follower count
+          if (this.profile) {
+            this.profile.followersCount--;
+          }
+          
+          this.snackBar.open(`Unfollowed ${this.profile?.username}`, 'Close', {
+            duration: 3000
+          });
+        },
+        error: (error) => {
+          this.isFollowLoading = false;
+          console.error('Error unfollowing user:', error);
+          this.snackBar.open('Failed to unfollow user', 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    } else {
+      // Follow
+      this.subscriptionService.followUser(this.profile.id).subscribe({
+        next: () => {
+          this.isFollowing = true;
+          this.isFollowLoading = false;
+          
+          // Update follower count
+          if (this.profile) {
+            this.profile.followersCount++;
+          }
+          
+          this.snackBar.open(`Following ${this.profile?.username}`, 'Close', {
+            duration: 3000
+          });
+        },
+        error: (error) => {
+          this.isFollowLoading = false;
+          console.error('Error following user:', error);
+          
+          if (error.status === 400) {
+            this.snackBar.open(error.error.message || 'Cannot follow this user', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          } else {
+            this.snackBar.open('Failed to follow user', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        }
+      });
     }
   }
 

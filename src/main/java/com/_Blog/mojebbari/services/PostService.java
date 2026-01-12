@@ -13,11 +13,14 @@ import com._Blog.mojebbari.repositories.PostRepository;
 import com._Blog.mojebbari.repositories.UserRepository;
 import com._Blog.mojebbari.repositories.LikeRepository;
 import com._Blog.mojebbari.repositories.CommentRepository;
+import com._Blog.mojebbari.repositories.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     // 1. Create a Post
     public PostResponse createPost(CreatePostRequest request, String username) {
@@ -56,6 +60,43 @@ public class PostService {
     public Page<PostResponse> getAllPosts(Pageable pageable) {
         return postRepository.findAll(pageable)
                 .map(this::mapToResponse);
+    }
+
+    // 2b. Get Posts from Followed Users (Personalized Feed)
+    public Page<PostResponse> getFollowedUsersPosts(String username, Pageable pageable) {
+        // Find the current user
+        User currentUser = userRepository.findByEmailOrUsername(username, username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        
+        // Get IDs of users that current user follows
+        List<Long> followingIds = subscriptionRepository.findFollowingIdsByFollowerId(currentUser.getId());
+        
+        // If user doesn't follow anyone, return empty page
+        if (followingIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        
+        // Get all posts from followed users
+        List<Post> allPosts = new ArrayList<>();
+        for (Long userId : followingIds) {
+            User followedUser = userRepository.findById(userId).orElse(null);
+            if (followedUser != null) {
+                allPosts.addAll(postRepository.findAllByUser(followedUser));
+            }
+        }
+        
+        // Sort by creation date (newest first)
+        allPosts.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
+        
+        // Apply pagination manually
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allPosts.size());
+        
+        List<PostResponse> postResponses = allPosts.subList(start, end).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(postResponses, pageable, allPosts.size());
     }
 
     // 3. Get Posts by Specific User (For profile page)
