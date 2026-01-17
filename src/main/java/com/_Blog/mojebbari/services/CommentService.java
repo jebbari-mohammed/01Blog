@@ -51,9 +51,9 @@ public class CommentService {
      * @return CommentResponse with created comment details
      */
     public CommentResponse addComment(Long postId, String userEmail, CommentRequest request) {
-        // 1. Find user by email
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + userEmail));
+        // 1. Find user by email or username
+        User user = userRepository.findByEmailOrUsername(userEmail, userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userEmail));
 
         // 2. Find post
         Post post = postRepository.findById(postId)
@@ -118,8 +118,8 @@ public class CommentService {
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found with ID: " + commentId));
 
         // 2. Find user
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + userEmail));
+        User user = userRepository.findByEmailOrUsername(userEmail, userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userEmail));
 
         // 3. Authorization: Only author can update
         if (!comment.getUser().getId().equals(user.getId())) {
@@ -158,8 +158,8 @@ public class CommentService {
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found with ID: " + commentId));
 
         // 2. Find current user
-        User currentUser = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + userEmail));
+        User currentUser = userRepository.findByEmailOrUsername(userEmail, userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userEmail));
 
         // 3. Authorization check
         boolean isAuthor = comment.getUser().getId().equals(currentUser.getId());

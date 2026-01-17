@@ -63,6 +63,15 @@
         <mat-icon>flag</mat-icon>
       </button>
 
+      <!-- Edit Button (only if user owns the post) -->
+      <button 
+        *ngIf="canDelete()"
+        mat-icon-button 
+        (click)="editPost()"
+        matTooltip="Edit post">
+        <mat-icon>edit</mat-icon>
+      </button>
+
       <!-- Delete Button (only if user can delete) -->
       <button 
         *ngIf="canDelete()"

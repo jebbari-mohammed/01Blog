@@ -1,0 +1,80 @@
+<div class="edit-post-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>edit</mat-icon>
+    Edit Post
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="editForm">
+      <!-- Title -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Title</mat-label>
+        <input 
+          matInput 
+          formControlName="title" 
+          placeholder="Enter post title"
+          maxlength="200">
+        <mat-hint align="end">
+          {{editForm.get('title')?.value?.length || 0}}/200
+        </mat-hint>
+        <mat-error *ngIf="editForm.get('title')?.hasError('required')">
+          Title is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Category -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category">
+          <mat-option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="editForm.get('category')?.hasError('required')">
+          Category is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Content -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Content</mat-label>
+        <textarea 
+          matInput 
+          formControlName="content"
+          placeholder="What's on your mind?"
+          rows="10"
+          maxlength="5000">
+        </textarea>
+        <mat-hint align="end">
+          {{editForm.get('content')?.value?.length || 0}}/5000
+        </mat-hint>
+        <mat-error *ngIf="editForm.get('content')?.hasError('required')">
+          Content is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button 
+      mat-button 
+      (click)="onCancel()"
+      [disabled]="isSubmitting">
+      Cancel
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="editForm.invalid || isSubmitting">
+      <mat-icon>save</mat-icon>
+      {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -52,9 +52,9 @@ public class LikeService {
      * @throws IllegalStateException if already liked
      */
     public void likePost(Long postId, String userEmail) {
-        // 1. Find user by email
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + userEmail));
+        // 1. Find user by email or username
+        User user = userRepository.findByEmailOrUsername(userEmail, userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userEmail));
 
         // 2. Find post
         Post post = postRepository.findById(postId)
@@ -91,9 +91,9 @@ public class LikeService {
      * @throws EntityNotFoundException if like doesn't exist
      */
     public void unlikePost(Long postId, String userEmail) {
-        // 1. Find user by email
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + userEmail));
+        // 1. Find user by email or username
+        User user = userRepository.findByEmailOrUsername(userEmail, userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userEmail));
 
         // 2. Find post
         Post post = postRepository.findById(postId)

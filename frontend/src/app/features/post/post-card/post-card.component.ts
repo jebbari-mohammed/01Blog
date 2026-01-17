@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CommentsComponent } from '../comments/comments.component';
 import { environment } from '../../../../environments/environment';
 import { ReportDialogComponent } from '../../../shared/components/report-dialog/report-dialog.component';
+import { EditPostDialogComponent } from '../edit-post-dialog/edit-post-dialog.component';
 
 /**
  * PostCardComponent - Displays a single post
@@ -170,6 +171,31 @@ export class PostCardComponent {
 
     // User can delete if they are the author or an admin
     return currentUser.username === this.post.authorUsername || currentUser.role === 'ADMIN';
+  }
+
+  /**
+   * Open edit dialog for this post
+   * 
+   * How it works:
+   * 1. Opens Material Dialog with edit form
+   * 2. Pre-fills form with current post data
+   * 3. If user saves, updates the post and refreshes the UI
+   */
+  editPost(): void {
+    const dialogRef = this.dialog.open(EditPostDialogComponent, {
+      width: '700px',
+      data: { post: this.post }
+    });
+
+    dialogRef.afterClosed().subscribe(updatedPost => {
+      if (updatedPost) {
+        // Update the local post data
+        this.post = { ...this.post, ...updatedPost };
+        this.snackBar.open('Post updated successfully!', 'Close', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   /**

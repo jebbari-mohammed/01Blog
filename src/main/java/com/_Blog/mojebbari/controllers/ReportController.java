@@ -54,13 +54,8 @@ public class ReportController {
         log.info("POST /api/reports - User {} reporting {} ID {}", 
                  user.getUsername(), request.getReportType(), request.getContentId());
 
-        try {
-            ReportResponse report = reportService.createReport(request, user.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(report);
-        } catch (IllegalStateException e) {
-            log.warn("Report creation failed: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        ReportResponse report = reportService.createReport(request, user.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(report);
     }
 
     /**

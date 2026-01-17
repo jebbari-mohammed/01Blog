@@ -83,12 +83,16 @@ export class ReportDialogComponent {
         
         // Show appropriate error message
         let message = 'Failed to submit report. Please try again.';
-        if (error.status === 400) {
+        
+        // Try to get specific error message from backend
+        if (error.error && error.error.error) {
+          message = error.error.error;
+        } else if (error.status === 400) {
           message = 'You have already reported this content.';
         }
         
         this.snackBar.open(message, 'Close', {
-          duration: 4000,
+          duration: 5000,
           panelClass: ['error-snackbar']
         });
       }

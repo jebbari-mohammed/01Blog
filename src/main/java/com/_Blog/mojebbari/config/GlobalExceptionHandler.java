@@ -61,8 +61,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("message", ex.getMessage()); // Use "message" instead of "error" for consistency
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error); // Returns 409 Conflict
+        error.put("error", ex.getMessage()); // Use "error" for consistency
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error); // Returns 400 Bad Request
     }
     
     // 6. Handle Entity Not Found Errors (e.g., post not found, user not found)
