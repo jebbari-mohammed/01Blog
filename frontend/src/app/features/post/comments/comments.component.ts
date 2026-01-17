@@ -11,9 +11,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { Comment } from '../../../core/models/comment.model';
 import { CommentService } from '../../../core/services/comment.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReportDialogComponent } from '../../../shared/components/report-dialog/report-dialog.component';
 
 /**
  * CommentsComponent - Display and manage comments for a post
@@ -59,7 +61,8 @@ export class CommentsComponent implements OnInit {
     private fb: FormBuilder,
     private commentService: CommentService,
     public authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -242,6 +245,35 @@ export class CommentsComponent implements OnInit {
   canEditComment(comment: Comment): boolean {
     const currentUser = this.authService.getCurrentUser();
     return currentUser?.username === comment.username;
+  }
+
+  /**
+   * Open report dialog for a comment
+   * 
+   * How it works:
+   * 1. Opens Material Dialog with report form
+   * 2. Passes comment ID and text as preview
+   * 3. If user submits report successfully, shows success message
+   */
+  openReportDialog(comment: Comment): void {
+    const dialogRef = this.dialog.open(ReportDialogComponent, {
+      width: '500px',
+      data: {
+        contentType: 'COMMENT',
+        contentId: comment.id,
+        contentPreview: comment.text // Show comment text in preview
+      }
+    });
+
+    // Handle dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        // Report was submitted successfully
+        this.snackBar.open('Report submitted successfully. Our team will review it.', 'Close', {
+          duration: 5000
+        });
+      }
+    });
   }
 
   /**

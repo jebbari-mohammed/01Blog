@@ -26,12 +26,59 @@ public class AuthService {
 
     // Register a new user
     public AuthenticationResponse register(RegisterRequest request) {
+        // Check if username already exists
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalStateException("Username '" + request.getUsername() + "' is already taken");
+        }
+        
+        // Check if email already exists
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalStateException("Email '" + request.getEmail() + "' is already registered");
+        }
+        
         // Step 1: Create new user with hashed password
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword())) // Encrypt password
                 .role(Role.USER) // Everyone starts as regular user
+                .build();
+
+        // Step 2: Save user to database
+        userRepository.save(user);
+
+        // Step 3: Create tokens for the user
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        // Step 4: Return tokens
+        return AuthenticationResponse.builder()
+                .token(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    /**
+     * Register a new admin user
+     * WARNING: In production, secure this endpoint or remove it!
+     */
+    public AuthenticationResponse registerAdmin(RegisterRequest request) {
+        // Check if username already exists
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalStateException("Username '" + request.getUsername() + "' is already taken");
+        }
+        
+        // Check if email already exists
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalStateException("Email '" + request.getEmail() + "' is already registered");
+        }
+        
+        // Step 1: Create new user with ADMIN role
+        User user = User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword())) // Encrypt password
+                .role(Role.ADMIN) // Set ADMIN role
                 .build();
 
         // Step 2: Save user to database

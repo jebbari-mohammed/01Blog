@@ -62,7 +62,8 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // This tells Spring Security what role this user has
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        // IMPORTANT: Spring Security's hasRole() expects "ROLE_" prefix
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

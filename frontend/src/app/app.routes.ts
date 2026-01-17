@@ -5,7 +5,9 @@ import { HomeComponent } from './features/home/home.component';
 import { ProfileComponent } from './features/user/profile/profile.component';
 import { EditProfileComponent } from './features/user/edit-profile/edit-profile.component';
 import { CreatePostComponent } from './features/post/create-post/create-post.component';
+import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 /**
  * Routes Configuration - Defines all pages in the app
@@ -66,6 +68,13 @@ export const routes: Routes = [
   {
     path: 'profile/:username',  // :username is a route parameter
     component: ProfileComponent
+  },
+
+  // Admin Dashboard (protected - ADMIN role only)
+  {
+    path: 'admin',
+    component: AdminDashboardComponent,
+    canActivate: [adminGuard]  // <-- Requires ADMIN role
   },
 
   // Wildcard route - handles unknown URLs

@@ -19,6 +19,26 @@
 
       <!-- If user is logged in -->
       <ng-container *ngIf="currentUser">
+        <!-- DEBUG: Show current user info -->
+        <span style="color: red; margin: 0 10px; font-size: 12px;">
+          DEBUG: Role={{ currentUser.role }} | IsAdmin={{ currentUser.role === 'ADMIN' }}
+        </span>
+
+        <!-- Admin Panel (only for admins) -->
+        <button 
+          *ngIf="currentUser.role === 'ADMIN'"
+          mat-button 
+          routerLink="/admin">
+          <mat-icon 
+            [matBadge]="pendingReportsCount" 
+            [matBadgeHidden]="pendingReportsCount === 0"
+            matBadgeColor="warn"
+            matBadgeSize="small">
+            admin_panel_settings
+          </mat-icon>
+          Admin Panel
+        </button>
+
         <!-- Create Post button -->
         <button mat-raised-button color="accent" routerLink="/post/create">
           <mat-icon>add</mat-icon>

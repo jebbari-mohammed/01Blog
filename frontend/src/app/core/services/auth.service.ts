@@ -202,11 +202,13 @@ export class AuthService {
       // The payload contains the user information
       const decoded: any = jwtDecode(token);
       
+      console.log('🔍 AuthService - Decoded JWT token:', decoded);
+      
       // Extract user info from token payload
       return {
         id: decoded.userId,
         username: decoded.username,
-        email: decoded.sub,  // 'sub' is the standard JWT field for subject (email in our case)
+        email: decoded.email || decoded.sub,  // Use email field, fallback to sub
         role: decoded.role,
         createdAt: decoded.createdAt
       };

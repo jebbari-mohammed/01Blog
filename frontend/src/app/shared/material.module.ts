@@ -38,6 +38,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTableModule } from '@angular/material/table';
 
 // Array of all Material modules we want to use
 const materialModules = [
@@ -62,7 +63,8 @@ const materialModules = [
   MatTooltipModule,
   MatChipsModule,
   MatGridListModule,
-  MatDividerModule
+  MatDividerModule,
+  MatTableModule
 ];
 
 @NgModule({

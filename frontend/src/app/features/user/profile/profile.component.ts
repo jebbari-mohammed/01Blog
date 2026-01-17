@@ -7,10 +7,12 @@ import { UserService } from '../../../core/services/user.service';
 import { PostService } from '../../../core/services/post.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SubscriptionService } from '../../../core/services/subscription.service';
+import { ReportService, ReportType } from '../../../core/services/report.service';
 import { UserProfileResponse } from '../../../core/models/user.model';
 import { Post } from '../../../core/models/post.model';
 import { PostCardComponent } from '../../post/post-card/post-card.component';
 import { UserListDialogComponent } from '../../../shared/components/user-list-dialog/user-list-dialog.component';
+import { ReportDialogComponent } from '../../../shared/components/report-dialog/report-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../../environments/environment';
 
@@ -52,6 +54,7 @@ export class ProfileComponent implements OnInit {
     private postService: PostService,
     public authService: AuthService,
     private subscriptionService: SubscriptionService,
+    private reportService: ReportService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -261,7 +264,7 @@ export class ProfileComponent implements OnInit {
   }
 
   /**
-   * Open following list dialog
+   * Show following dialog
    */
   showFollowing(): void {
     if (!this.profile) return;
@@ -285,6 +288,29 @@ export class ProfileComponent implements OnInit {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
+      }
+    });
+  }
+
+  /**
+   * Report this user
+   */
+  reportUser(): void {
+    if (!this.profile) return;
+
+    const dialogRef = this.dialog.open(ReportDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: {
+        contentType: ReportType.USER,
+        contentId: this.profile.id,
+        contentPreview: `@${this.profile.username}${this.profile.bio ? ' - ' + this.profile.bio : ''}`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Report submitted successfully (handled in dialog)
       }
     });
   }

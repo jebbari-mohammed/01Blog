@@ -1,0 +1,99 @@
+.report-dialog {
+  min-width: 400px;
+  max-width: 500px;
+
+  h2 {
+    color: #d32f2f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .content-preview {
+    background-color: #fff3e0;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+
+    mat-icon {
+      color: #ff9800;
+      flex-shrink: 0;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+  }
+
+  mat-dialog-content {
+    padding: 16px 24px;
+    overflow: visible;
+
+    form {
+      .full-width {
+        width: 100%;
+        margin-bottom: 16px;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+    }
+
+    .info-message {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background-color: #e3f2fd;
+      border-radius: 8px;
+      margin-top: 16px;
+
+      mat-icon {
+        color: #1976d2;
+        flex-shrink: 0;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.7);
+      }
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+    button {
+      margin-left: 8px;
+
+      mat-spinner {
+        display: inline-block;
+        margin: 0 auto;
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 600px) {
+  .report-dialog {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}

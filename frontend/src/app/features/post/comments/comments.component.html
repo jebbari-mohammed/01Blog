@@ -81,20 +81,32 @@
             <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
           </div>
           
-          <!-- Edit/Delete Actions -->
-          <div *ngIf="canEditComment(comment)" class="comment-actions">
+          <!-- Edit/Delete/Report Actions -->
+          <div class="comment-actions">
+            <!-- Edit/Delete (only if user owns comment) -->
+            <ng-container *ngIf="canEditComment(comment)">
+              <button 
+                mat-icon-button 
+                (click)="editComment(comment)"
+                matTooltip="Edit comment">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button 
+                mat-icon-button 
+                color="warn"
+                (click)="deleteComment(comment.id)"
+                matTooltip="Delete comment">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-container>
+
+            <!-- Report Button (only if NOT own comment) -->
             <button 
+              *ngIf="!canEditComment(comment) && authService.isLoggedIn()"
               mat-icon-button 
-              (click)="editComment(comment)"
-              matTooltip="Edit comment">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button 
-              mat-icon-button 
-              color="warn"
-              (click)="deleteComment(comment.id)"
-              matTooltip="Delete comment">
-              <mat-icon>delete</mat-icon>
+              (click)="openReportDialog(comment)"
+              matTooltip="Report comment">
+              <mat-icon>flag</mat-icon>
             </button>
           </div>
         </div>

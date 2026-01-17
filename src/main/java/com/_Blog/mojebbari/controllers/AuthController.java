@@ -30,6 +30,17 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request));
     }
 
+    /**
+     * Register admin user - FOR DEVELOPMENT ONLY
+     * In production, you should secure this endpoint or remove it entirely
+     */
+    @PostMapping("/register-admin")
+    public ResponseEntity<AuthenticationResponse> registerAdmin(
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        return ResponseEntity.ok(authService.registerAdmin(request));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
             @Valid @RequestBody LoginRequest request

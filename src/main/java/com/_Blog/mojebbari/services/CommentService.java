@@ -35,6 +35,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     /**
      * Add a comment to a post
@@ -68,10 +69,10 @@ public class CommentService {
         // 4. Save to database
         Comment savedComment = commentRepository.save(comment);
 
-        // TODO Stage 4: Create notification for post author
-        // "Alice commented on your post"
+        // 5. Create notification for post author
+        notificationService.createCommentNotification(user, post, savedComment);
 
-        // 5. Convert to DTO and return
+        // 6. Convert to DTO and return
         return mapToCommentResponse(savedComment, user.getId());
     }
 

@@ -9,11 +9,14 @@ import com._Blog.mojebbari.dto.UpdatePostRequest;
 import com._Blog.mojebbari.models.Post;
 import com._Blog.mojebbari.models.Role;
 import com._Blog.mojebbari.models.User;
+import com._Blog.mojebbari.models.Notification;
 import com._Blog.mojebbari.repositories.PostRepository;
 import com._Blog.mojebbari.repositories.UserRepository;
 import com._Blog.mojebbari.repositories.LikeRepository;
 import com._Blog.mojebbari.repositories.CommentRepository;
 import com._Blog.mojebbari.repositories.SubscriptionRepository;
+import com._Blog.mojebbari.repositories.ReportRepository;
+import com._Blog.mojebbari.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +36,9 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final ReportRepository reportRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     // 1. Create a Post
     public PostResponse createPost(CreatePostRequest request, String username) {
@@ -51,6 +57,13 @@ public class PostService {
 
         // Save to DB
         Post savedPost = postRepository.save(post);
+
+        // Create notifications for all followers
+        List<Long> followerIds = subscriptionRepository.findFollowerIdsByFollowingId(user.getId());
+        if (!followerIds.isEmpty()) {
+            List<User> followers = userRepository.findAllById(followerIds);
+            notificationService.createNewPostNotifications(user, savedPost, followers);
+        }
 
         // Convert to DTO to return
         return mapToResponse(savedPost);
@@ -162,7 +175,30 @@ public class PostService {
              throw new AccessDeniedException("You do not have permission to delete this post.");
         }
         
-        // If the check passes (author or admin), delete the post
+        // Delete all related entities first to avoid foreign key constraint violations
+        // 1. Delete all comments on this post
+        List<com._Blog.mojebbari.models.Comment> comments = commentRepository.findByPostOrderByCreatedAtAsc(post);
+        commentRepository.deleteAll(comments);
+        
+        // 2. Delete all likes on this post
+        List<com._Blog.mojebbari.models.Like> likes = likeRepository.findByPostOrderByCreatedAtDesc(post);
+        likeRepository.deleteAll(likes);
+        
+        // 3. Delete all reports about this post (find by type and contentId)
+        List<com._Blog.mojebbari.models.Report> reports = reportRepository.findByReportTypeOrderByCreatedAtDesc(
+            com._Blog.mojebbari.models.ReportType.POST
+        ).stream()
+         .filter(r -> r.getPost() != null && r.getPost().getId().equals(postId))
+         .collect(Collectors.toList());
+        reportRepository.deleteAll(reports);
+        
+        // 4. Delete all notifications related to this post
+        List<Notification> notifications = notificationRepository.findAll().stream()
+            .filter(n -> n.getPost() != null && n.getPost().getId().equals(postId))
+            .collect(Collectors.toList());
+        notificationRepository.deleteAll(notifications);
+        
+        // Finally, delete the post itself
         postRepository.delete(post);
     }
 

@@ -53,6 +53,15 @@
             <span *ngIf="!isFollowLoading">{{ isFollowing ? 'Unfollow' : 'Follow' }}</span>
             <mat-spinner *ngIf="isFollowLoading" diameter="20" style="display: inline-block; margin-left: 8px;"></mat-spinner>
           </button>
+
+          <!-- Report button -->
+          <button 
+            *ngIf="!isOwnProfile && authService.isLoggedIn()" 
+            mat-icon-button 
+            (click)="reportUser()"
+            matTooltip="Report this user">
+            <mat-icon>flag</mat-icon>
+          </button>
         </div>
       </div>
 

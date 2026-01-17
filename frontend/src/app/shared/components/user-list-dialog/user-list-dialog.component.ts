@@ -1,9 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../material.module';
 import { Router } from '@angular/router';
 import { SubscriptionService, UserSummary } from '../../../core/services/subscription.service';
+import { ReportService, ReportType } from '../../../core/services/report.service';
+import { ReportDialogComponent } from '../report-dialog/report-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../../environments/environment';
 
@@ -38,6 +40,8 @@ export class UserListDialogComponent {
     public dialogRef: MatDialogRef<UserListDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserListDialogData,
     private subscriptionService: SubscriptionService,
+    private reportService: ReportService,
+    private dialog: MatDialog,
     private router: Router,
     private snackBar: MatSnackBar
   ) {
@@ -96,6 +100,27 @@ export class UserListDialogComponent {
    */
   getInitials(username: string): string {
     return username.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Report a user
+   */
+  reportUser(user: UserSummary): void {
+    const dialogRef = this.dialog.open(ReportDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: {
+        contentType: ReportType.USER,
+        contentId: user.id,
+        contentPreview: `@${user.username}${user.bio ? ' - ' + user.bio : ''}`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Report submitted successfully (handled in dialog)
+      }
+    });
   }
 
   /**

@@ -79,6 +79,14 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<Long> findFollowingIdsByFollowerId(@Param("followerId") Long followerId);
 
     /**
+     * Get IDs of users following this user (followers)
+     * 
+     * Used for sending notifications to all followers
+     */
+    @Query("SELECT s.follower.id FROM Subscription s WHERE s.following.id = :followingId")
+    List<Long> findFollowerIdsByFollowingId(@Param("followingId") Long followingId);
+
+    /**
      * Delete subscription by follower and following
      * 
      * Used for unfollow functionality

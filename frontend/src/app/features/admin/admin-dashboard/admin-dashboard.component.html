@@ -1,0 +1,150 @@
+<div class="admin-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>
+      <mat-icon>admin_panel_settings</mat-icon>
+      Admin Dashboard - Reports Management
+    </h1>
+    <p class="subtitle">Review and manage user-reported content</p>
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <mat-tab-group 
+    (selectedIndexChange)="selectStatus(statuses[$event])">
+    
+    <mat-tab label="All Reports">
+      <ng-template mat-tab-label>
+        All Reports
+        <span class="badge">{{ reports.length }}</span>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Pending">
+      <ng-template mat-tab-label>
+        Pending
+        <span class="badge warn">{{ statusCounts.PENDING }}</span>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Reviewed">
+      <ng-template mat-tab-label>
+        Reviewed
+        <span class="badge primary">{{ statusCounts.REVIEWED }}</span>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Resolved">
+      <ng-template mat-tab-label>
+        Resolved
+        <span class="badge accent">{{ statusCounts.RESOLVED }}</span>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Dismissed">
+      <ng-template mat-tab-label>
+        Dismissed
+        <span class="badge">{{ statusCounts.DISMISSED }}</span>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading reports...</p>
+  </div>
+
+  <!-- Reports Table -->
+  <div *ngIf="!isLoading" class="table-container">
+    <!-- Empty State -->
+    <div *ngIf="filteredReports.length === 0" class="empty-state">
+      <mat-icon>check_circle</mat-icon>
+      <h2>No Reports Found</h2>
+      <p>{{ selectedStatus === 'ALL' ? 'No reports have been submitted yet.' : 'No reports with status: ' + selectedStatus }}</p>
+    </div>
+
+    <!-- Reports Table -->
+    <table *ngIf="filteredReports.length > 0" mat-table [dataSource]="filteredReports" class="reports-table">
+      
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let report">{{ report.id }}</td>
+      </ng-container>
+
+      <!-- Reporter Column -->
+      <ng-container matColumnDef="reporter">
+        <th mat-header-cell *matHeaderCellDef>Reporter</th>
+        <td mat-cell *matCellDef="let report">
+          <div class="reporter-cell">
+            <mat-icon>account_circle</mat-icon>
+            <span>{{ report.reporterUsername }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Type Column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let report">
+          <mat-chip [color]="report.reportType === 'POST' ? 'primary' : 'accent'" selected>
+            {{ report.reportType }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Reason Column -->
+      <ng-container matColumnDef="reason">
+        <th mat-header-cell *matHeaderCellDef>Reason</th>
+        <td mat-cell *matCellDef="let report">
+          {{ getReasonLabel(report.reason) }}
+        </td>
+      </ng-container>
+
+      <!-- Content Preview Column -->
+      <ng-container matColumnDef="contentPreview">
+        <th mat-header-cell *matHeaderCellDef>Content</th>
+        <td mat-cell *matCellDef="let report" class="content-preview">
+          <div class="preview-text" [matTooltip]="report.contentPreview">
+            {{ truncate(report.contentPreview, 60) }}
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let report">
+          <mat-chip [color]="getStatusColor(report.status)" selected>
+            {{ report.status }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Reported</th>
+        <td mat-cell *matCellDef="let report">
+          {{ formatDate(report.createdAt) }}
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let report">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="openUpdateStatusDialog(report)">
+            <mat-icon>edit</mat-icon>
+            Update Status
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="report-row"></tr>
+    </table>
+  </div>
+</div>

@@ -36,6 +36,7 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     /**
      * Like a post
@@ -73,8 +74,8 @@ public class LikeService {
         // 5. Save to database
         likeRepository.save(like);
 
-        // TODO Stage 4: Create notification for post author
-        // "Alice liked your post"
+        // 6. Create notification for post author
+        notificationService.createLikeNotification(user, post);
     }
 
     /**

@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { CommentsComponent } from '../comments/comments.component';
 import { environment } from '../../../../environments/environment';
+import { ReportDialogComponent } from '../../../shared/components/report-dialog/report-dialog.component';
 
 /**
  * PostCardComponent - Displays a single post
@@ -169,6 +170,35 @@ export class PostCardComponent {
 
     // User can delete if they are the author or an admin
     return currentUser.username === this.post.authorUsername || currentUser.role === 'ADMIN';
+  }
+
+  /**
+   * Open report dialog for this post
+   * 
+   * How it works:
+   * 1. Opens Material Dialog with report form
+   * 2. Passes post ID and content preview
+   * 3. If user submits report successfully, shows success message
+   */
+  openReportDialog(): void {
+    const dialogRef = this.dialog.open(ReportDialogComponent, {
+      width: '500px',
+      data: {
+        contentType: 'POST',
+        contentId: this.post.id,
+        contentPreview: this.post.content // Show post content in preview
+      }
+    });
+
+    // Handle dialog result
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        // Report was submitted successfully
+        this.snackBar.open('Report submitted successfully. Our team will review it.', 'Close', {
+          duration: 5000
+        });
+      }
+    });
   }
 
   /**

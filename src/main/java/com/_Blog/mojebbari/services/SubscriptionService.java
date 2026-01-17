@@ -28,6 +28,7 @@ public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     /**
      * Follow a user
@@ -66,7 +67,8 @@ public class SubscriptionService {
 
         subscriptionRepository.save(subscription);
         
-        // TODO: Create a notification for the followed user (Stage 4)
+        // Create notification for the followed user
+        notificationService.createFollowNotification(follower, following);
     }
 
     /**

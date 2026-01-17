@@ -47,6 +47,7 @@ public class JwtService {
             User user = (User) userDetails;
             extraClaims.put("userId", user.getId());
             extraClaims.put("username", user.getUsername());
+            extraClaims.put("email", user.getEmail()); // Add email to token
             extraClaims.put("role", user.getRole().name());
         }
         

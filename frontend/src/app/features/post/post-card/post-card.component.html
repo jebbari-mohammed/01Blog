@@ -54,6 +54,15 @@
     </div>
 
     <div class="actions-right">
+      <!-- Report Button (only if NOT own post) -->
+      <button 
+        *ngIf="!canDelete() && authService.isLoggedIn()"
+        mat-icon-button 
+        (click)="openReportDialog()"
+        matTooltip="Report post">
+        <mat-icon>flag</mat-icon>
+      </button>
+
       <!-- Delete Button (only if user can delete) -->
       <button 
         *ngIf="canDelete()"

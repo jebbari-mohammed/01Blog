@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>
+  <mat-icon>edit</mat-icon>
+  Update Report Status
+</h2>
+
+<mat-dialog-content>
+  <div class="report-info">
+    <p><strong>Report ID:</strong> #{{ data.reportId }}</p>
+    <p><strong>Reason:</strong> {{ getReasonLabel() }}</p>
+    <p><strong>Current Status:</strong> 
+      <mat-chip [color]="data.currentStatus === 'PENDING' ? 'warn' : 'primary'" selected>
+        {{ data.currentStatus }}
+      </mat-chip>
+    </p>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <form [formGroup]="updateForm" (ngSubmit)="onSubmit()">
+    <!-- Status Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>New Status</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option *ngFor="let status of statusOptions" [value]="status">
+          {{ getStatusLabel(status) }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Select the new status for this report</mat-hint>
+    </mat-form-field>
+
+    <!-- Admin Notes -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Admin Notes (Optional)</mat-label>
+      <textarea 
+        matInput 
+        formControlName="adminNotes"
+        placeholder="Add notes explaining your decision..."
+        rows="4"
+        maxlength="1000">
+      </textarea>
+      <mat-hint align="end">
+        {{updateForm.get('adminNotes')?.value?.length || 0}}/1000
+      </mat-hint>
+    </mat-form-field>
+
+    <!-- Info Message -->
+    <div class="info-message">
+      <mat-icon>info</mat-icon>
+      <p>
+        <strong>Status Guide:</strong><br>
+        <strong>Reviewed:</strong> Report has been seen and is under investigation<br>
+        <strong>Resolved:</strong> Action has been taken (content removed, user warned, etc.)<br>
+        <strong>Dismissed:</strong> No action needed (false report or not a violation)
+      </p>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button 
+    mat-button 
+    (click)="onCancel()"
+    [disabled]="isSubmitting">
+    Cancel
+  </button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onSubmit()"
+    [disabled]="updateForm.invalid || isSubmitting">
+    <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+    <span *ngIf="!isSubmitting">Update Status</span>
+  </button>
+</mat-dialog-actions>

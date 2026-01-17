@@ -39,6 +39,13 @@
               {{ user.isFollowing ? 'Unfollow' : 'Follow' }}
             </span>
           </button>
+          <button 
+            *ngIf="!isCurrentUser(user.id)"
+            mat-icon-button 
+            (click)="reportUser(user)"
+            matTooltip="Report user">
+            <mat-icon>flag</mat-icon>
+          </button>
           <span *ngIf="isCurrentUser(user.id)" class="you-badge">You</span>
         </div>
       </div>

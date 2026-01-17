@@ -10,7 +10,7 @@ export interface RegisterRequest {
 
 // Login Request - What we send to /api/auth/login
 export interface LoginRequest {
-  email: string;
+  identifier: string;  // Can be username or email
   password: string;
 }
 
