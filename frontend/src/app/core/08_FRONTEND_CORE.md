@@ -1,14 +1,43 @@
 # Frontend Core Module - Services, Models, Guards & Interceptors
 
+> **Status:** ✅ Complete | **Last Updated:** January 17, 2026
+
 ## 📖 What is the Core Module?
 
-The **Core module** contains:
-- **Services**: Logic to communicate with backend API
-- **Models**: TypeScript interfaces defining data structures
-- **Guards**: Route protection (authentication, authorization)
-- **Interceptors**: Modify HTTP requests/responses automatically
+The **Core module** contains the foundation of the Angular application:
+- **Services**: API communication and business logic (8 services)
+- **Models**: TypeScript interfaces for type safety (10+ models)
+- **Guards**: Route protection (auth.guard, admin.guard)
+- **Interceptors**: HTTP request/response handling (JWT injection)
 
-Think of Core as the **foundation** of your Angular app.
+Think of Core as the **backbone** of your Angular app.
+
+---
+
+## ✅ Implemented Core Features
+
+### Services (8 Total)
+1. **AuthService** - Authentication, JWT management, user state
+2. **PostService** - Post CRUD operations, including `getPostById()`
+3. **CommentService** - Comment operations
+4. **LikeService** - Like/unlike functionality
+5. **SubscriptionService** - Follow/unfollow operations
+6. **UserService** - User profile management
+7. **ReportService** - Report submission and management
+8. **NotificationService** - Notifications with auto-polling (30s)
+
+### Models (10+ Interfaces)
+- User, Post, Comment, Like, Subscription
+- Notification, NotificationType enum
+- AuthResponse, LoginRequest, RegisterRequest
+- UserProfile, ReportRequest
+
+### Guards (2)
+- **AuthGuard** - Protects authenticated routes
+- **AdminGuard** - Protects admin-only routes
+
+### Interceptors (1)
+- **AuthInterceptor** - Auto-injects JWT tokens into requests
 
 ---
 

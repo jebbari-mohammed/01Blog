@@ -5,6 +5,7 @@ import { HomeComponent } from './features/home/home.component';
 import { ProfileComponent } from './features/user/profile/profile.component';
 import { EditProfileComponent } from './features/user/edit-profile/edit-profile.component';
 import { CreatePostComponent } from './features/post/create-post/create-post.component';
+import { PostDetailComponent } from './features/post/post-detail/post-detail.component';
 import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
@@ -41,10 +42,11 @@ export const routes: Routes = [
     component: RegisterComponent
   },
 
-  // Home page (public - anyone can access)
+  // Home page (protected - must be logged in)
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate: [authGuard]  // <-- Requires login
   },
 
   // Create post (protected - must be logged in)
@@ -52,6 +54,12 @@ export const routes: Routes = [
     path: 'post/create',
     component: CreatePostComponent,
     canActivate: [authGuard]  // <-- Requires login
+  },
+
+  // View single post (public - anyone can view)
+  {
+    path: 'posts/:id',
+    component: PostDetailComponent
   },
 
   // Edit profile (protected - must be logged in)
@@ -63,11 +71,12 @@ export const routes: Routes = [
     canActivate: [authGuard]  // <-- Requires login
   },
 
-  // Profile page (public - anyone can view profiles)
+  // Profile page (protected - must be logged in)
   // This dynamic route MUST come after specific routes like 'profile/edit'
   {
     path: 'profile/:username',  // :username is a route parameter
-    component: ProfileComponent
+    component: ProfileComponent,
+    canActivate: [authGuard]  // <-- Requires login
   },
 
   // Admin Dashboard (protected - ADMIN role only)

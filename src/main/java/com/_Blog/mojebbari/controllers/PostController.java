@@ -71,6 +71,12 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByUsername(username));
     }
     
+    // GET /api/posts/{id} - Get a single post by ID (public endpoint)
+    @GetMapping("/{id}")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.getPostById(id));
+    }
+    
     // PUT /api/posts/{postId} - Update a post
     @PutMapping("/{postId}")
     public ResponseEntity<PostResponse> updatePost(

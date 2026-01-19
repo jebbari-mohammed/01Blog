@@ -31,15 +31,16 @@ public class AuthController {
     }
 
     /**
-     * Register admin user - FOR DEVELOPMENT ONLY
-     * In production, you should secure this endpoint or remove it entirely
+     * Register admin user - DISABLED FOR SECURITY
+     * To enable: uncomment the endpoint below
+     * In production, this should be secured or removed entirely
      */
-    @PostMapping("/register-admin")
-    public ResponseEntity<AuthenticationResponse> registerAdmin(
-            @Valid @RequestBody RegisterRequest request
-    ) {
-        return ResponseEntity.ok(authService.registerAdmin(request));
-    }
+    // @PostMapping("/register-admin")
+    // public ResponseEntity<AuthenticationResponse> registerAdmin(
+    //         @Valid @RequestBody RegisterRequest request
+    // ) {
+    //     return ResponseEntity.ok(authService.registerAdmin(request));
+    // }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(

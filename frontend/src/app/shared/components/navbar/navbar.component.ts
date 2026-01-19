@@ -4,7 +4,10 @@ import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../material.module';
 import { AuthService } from '../../../core/services/auth.service';
 import { ReportService } from '../../../core/services/report.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationPanelComponent } from '../notification-panel/notification-panel.component';
 import { User } from '../../../core/models/user.model';
+import { Observable } from 'rxjs';
 
 /**
  * NavbarComponent - Navigation bar at the top of the app
@@ -20,7 +23,7 @@ import { User } from '../../../core/models/user.model';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MaterialModule],
+  imports: [CommonModule, RouterModule, MaterialModule, NotificationPanelComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
@@ -31,24 +34,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
   // Pending reports count (for admin badge)
   pendingReportsCount: number = 0;
   
+  // Unread notifications count
+  unreadCount$!: Observable<number>;
+  
   // Interval for polling pending reports
   private reportsInterval?: number;
 
   constructor(
     public authService: AuthService,
     private reportService: ReportService,
+    private notificationService: NotificationService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to unread notifications count
+    this.unreadCount$ = this.notificationService.unreadCount$;
+    
     // Subscribe to currentUser$ to know when user logs in/out
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      
-      // DEBUG: Log current user to console
-      console.log('🔍 Navbar - Current User:', user);
-      console.log('🔍 Navbar - User Role:', user?.role);
-      console.log('🔍 Navbar - Is Admin?:', user?.role === 'ADMIN');
       
       // If user is admin, start polling for pending reports
       if (user?.role === 'ADMIN') {

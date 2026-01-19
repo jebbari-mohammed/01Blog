@@ -36,9 +36,37 @@
   align-items: center;
   gap: 8px;
 
+  .notification-button {
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+
   button {
     mat-icon {
       margin-right: 4px;
     }
+  }
+}
+
+// Notification menu styling
+::ng-deep .notifications-menu {
+  .mat-mdc-menu-panel {
+    max-width: none !important;
+    min-width: 650px !important;
+    width: 650px !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  
+  .mat-mdc-menu-item {
+    padding: 0 !important;
+    height: auto !important;
+    line-height: normal !important;
   }
 }

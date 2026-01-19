@@ -37,6 +37,7 @@ public class ReportService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
 
     /**
      * Create a new report
@@ -190,7 +191,73 @@ public class ReportService {
         log.info("Report updated: id={}, status={}, reviewedBy={}", 
                  updatedReport.getId(), updatedReport.getStatus(), admin.getUsername());
 
+        // Create notification for the reporter
+        createReportReviewedNotification(report, admin);
+
         return mapToResponse(updatedReport);
+    }
+
+    /**
+     * Create notification when admin reviews a report
+     * 
+     * @param report - The reviewed report
+     * @param admin - Admin who reviewed the report
+     */
+    private void createReportReviewedNotification(Report report, User admin) {
+        try {
+            String message = buildReportReviewedMessage(report, admin);
+            
+            notificationService.createReportReviewedNotification(
+                report.getReporter(),
+                admin,
+                message
+            );
+            
+            log.info("Report reviewed notification created for user: {}", report.getReporter().getUsername());
+        } catch (Exception e) {
+            log.error("Failed to create report reviewed notification", e);
+            // Don't fail the entire operation if notification fails
+        }
+    }
+
+    /**
+     * Build notification message based on report type and status
+     * 
+     * @param report - The reviewed report
+     * @param admin - Admin who reviewed the report
+     * @return Notification message
+     */
+    private String buildReportReviewedMessage(Report report, User admin) {
+        String contentType = "";
+        
+        switch (report.getReportType()) {
+            case POST:
+                contentType = "post";
+                break;
+            case COMMENT:
+                contentType = "comment";
+                break;
+            case USER:
+                contentType = "user";
+                break;
+        }
+        
+        String statusMessage = "";
+        switch (report.getStatus()) {
+            case REVIEWED:
+                statusMessage = "has been reviewed";
+                break;
+            case RESOLVED:
+                statusMessage = "has been resolved";
+                break;
+            case DISMISSED:
+                statusMessage = "has been dismissed";
+                break;
+            default:
+                statusMessage = "has been updated";
+        }
+        
+        return String.format("Your report about a %s %s by admin", contentType, statusMessage);
     }
 
     /**

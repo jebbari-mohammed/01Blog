@@ -40,6 +40,10 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers("/uploads/**") // Allow access to uploaded files
                         .permitAll()
+                        .requestMatchers("/api/posts/{id}") // Allow viewing individual posts without auth
+                        .permitAll()
+                        .requestMatchers("/api/posts/*/comments") // Allow viewing comments without auth
+                        .permitAll()
                         .anyRequest() // Any other request...
                         .authenticated() // ...must be authenticated
                 );

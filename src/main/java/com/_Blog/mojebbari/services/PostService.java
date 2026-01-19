@@ -122,6 +122,14 @@ public class PostService {
                 .collect(Collectors.toList());
     }
     
+    // 3.5. Get Single Post by ID (For post detail page - public access)
+    public PostResponse getPostById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found with ID: " + postId));
+        
+        return mapToResponse(post);
+    }
+    
     // 4. Update a Post
     public PostResponse updatePost(Long postId, UpdatePostRequest request, String username) {
         Post post = postRepository.findById(postId)

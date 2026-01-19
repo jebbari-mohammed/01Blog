@@ -1,0 +1,23 @@
+<div class="post-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading post...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-state">
+    <h2>{{ error }}</h2>
+    <p>The post you're looking for doesn't exist or has been deleted.</p>
+    <a (click)="goBack()" class="back-link">← Back to Home</a>
+  </div>
+
+  <!-- Post Display -->
+  <div *ngIf="post && !isLoading" class="post-wrapper">
+    <a (click)="goBack()" class="back-link">← Back to Home</a>
+    <app-post-card 
+      [post]="post" 
+      (postDeleted)="onPostDeleted()">
+    </app-post-card>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="notification-panel">
+  <div class="panel-header">
+    <h3>Notifications</h3>
+    <button 
+      mat-button 
+      (click)="markAllAsRead()"
+      *ngIf="hasUnreadNotifications()">
+      Mark all as read
+    </button>
+  </div>
+
+  <div class="panel-content">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading notifications...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && notifications.length === 0" class="empty-state">
+      <mat-icon>notifications_none</mat-icon>
+      <p>No notifications yet</p>
+      <span>We'll notify you when something happens</span>
+    </div>
+
+    <!-- Notifications List -->
+    <div *ngIf="!isLoading && notifications.length > 0" class="notifications-list">
+      <a 
+        *ngFor="let notification of notifications"
+        [routerLink]="getNotificationLink(notification)"
+        class="notification-item"
+        [class.unread]="!notification.isRead"
+        (click)="markAsRead(notification)">
+        
+        <div class="notification-icon">
+          <mat-icon [class]="'icon-' + notification.type.toLowerCase()">
+            {{ getNotificationIcon(notification.type) }}
+          </mat-icon>
+        </div>
+
+        <div class="notification-content">
+          <p class="notification-message">{{ notification.message }}</p>
+          <span class="notification-time">{{ formatDate(notification.createdAt) }}</span>
+        </div>
+
+        <div class="unread-indicator" *ngIf="!notification.isRead"></div>
+      </a>
+    </div>
+  </div>
+</div>

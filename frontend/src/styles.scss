@@ -2,3 +2,23 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Notification Menu Width Override */
+.notifications-menu.mat-mdc-menu-panel {
+  max-width: none !important;
+  min-width: 650px !important;
+  width: 650px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.notifications-menu .mat-mdc-menu-content {
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.notifications-menu .mat-mdc-menu-item {
+  padding: 0 !important;
+  height: auto !important;
+  line-height: normal !important;
+}

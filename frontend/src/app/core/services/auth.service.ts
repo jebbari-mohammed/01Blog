@@ -93,7 +93,7 @@ export class AuthService {
    */
   logout(): void {
     // Remove tokens from browser storage
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');  // Fixed: was 'accessToken', should be 'token'
     localStorage.removeItem('refreshToken');
     
     // Update current user to null (no one logged in)
@@ -201,8 +201,6 @@ export class AuthService {
       // JWT tokens have 3 parts: header.payload.signature
       // The payload contains the user information
       const decoded: any = jwtDecode(token);
-      
-      console.log('🔍 AuthService - Decoded JWT token:', decoded);
       
       // Extract user info from token payload
       return {

@@ -102,6 +102,21 @@ public class NotificationService {
     }
 
     /**
+     * Create a notification when admin reviews a user's report
+     */
+    @Transactional
+    public void createReportReviewedNotification(User reporter, User admin, String message) {
+        Notification notification = Notification.builder()
+                .recipient(reporter)
+                .actor(admin)
+                .type(NotificationType.REPORT_REVIEWED)
+                .message(message)
+                .build();
+        
+        notificationRepository.save(notification);
+    }
+
+    /**
      * Get all notifications for current user
      */
     @Transactional(readOnly = true)

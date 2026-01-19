@@ -1,15 +1,71 @@
 # Frontend Features Module - Components & Pages
 
+> **Status:** ✅ Complete | **Last Updated:** January 17, 2026
+
 ## 📖 What are Features?
 
-**Features** are the main pages and functionality of your app:
-- **Auth**: Login and registration pages
-- **Home**: Main feed showing all posts
-- **Post**: Create, view, edit posts and comments
-- **Profile**: User profile page
-- **Admin**: Admin dashboard for managing reports
+**Features** are the main pages and functionality of the application:
+- **Auth**: Login and registration pages (100% complete)
+- **Home**: Main feed showing all posts (100% complete)
+- **Post**: Create, view, edit, delete posts (100% complete)
+  - Post creation with media upload
+  - **Edit via Material Dialog** ✅
+  - **Individual post view at /posts/:id** ✅
+  - Comments component
+- **Profile**: User profile pages (100% complete)
+- **Admin**: Admin dashboard for reports (100% complete)
+- **User**: User search and lists (100% complete)
 
 Think of features as the **user-facing parts** of your app.
+
+---
+
+## ✅ Implemented Features
+
+### 1. Authentication (`auth/`)
+- ✅ **LoginComponent** - User login form
+- ✅ **RegisterComponent** - User registration
+- ✅ JWT token management
+- ✅ Proper logout with cleanup
+
+### 2. Home (`home/`)
+- ✅ **HomeComponent** - Main feed displaying all posts
+- ✅ Post creation form
+- ✅ Pagination support
+- ✅ Loading and error states
+
+### 3. Posts (`post/`)
+- ✅ **PostCardComponent** - Individual post display
+  - Like button with instant feedback
+  - Comment button
+  - Edit button (author only)
+  - Delete button (author or admin)
+- ✅ **CreatePostComponent** - Post creation form
+- ✅ **EditPostDialogComponent** - Material Dialog for editing ✅
+- ✅ **PostDetailComponent** - Individual post view at `/posts/:id` ✅
+- ✅ **CommentsComponent** - Comment list and creation
+  - Add comments
+  - Edit own comments
+  - Delete comments (author or admin)
+
+### 4. Profile (`profile/`)
+- ✅ **ProfileComponent** - User profile display
+  - User stats (posts, followers, following)
+  - Follow/unfollow button
+  - User's posts
+  - Edit profile link (own profile only)
+- ✅ **FollowersDialogComponent** - Followers/following lists
+
+### 5. Admin (`admin/`)
+- ✅ **AdminDashboardComponent** - Report management
+  - View all reports
+  - Filter by status
+  - Update report status
+- ✅ **UpdateReportStatusDialogComponent** - Status update dialog
+- ✅ Admin badge in navbar
+
+### 6. User (`user/`)
+- ✅ **UserCardComponent** - User display in lists
 
 ---
 

@@ -1,0 +1,274 @@
+.notification-panel {
+  width: 650px;
+  max-width: 650px;
+  max-height: 700px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  * {
+    box-sizing: border-box;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    border-bottom: 1px solid #e0e0e0;
+    background: linear-gradient(to bottom, #fafafa, white);
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #262626;
+      letter-spacing: -0.2px;
+    }
+
+    button {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0095f6;
+      text-transform: none;
+      min-width: auto;
+      padding: 0;
+      
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .panel-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 600px;
+    width: 100%;
+    box-sizing: border-box;
+    
+    > * {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    // Custom scrollbar (Instagram-like)
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #dbdbdb;
+      border-radius: 4px;
+      
+      &:hover {
+        background: #c7c7c7;
+      }
+    }
+
+    .loading-state, .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 40px;
+      text-align: center;
+      min-height: 400px;
+      max-width: 100%;
+      width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+
+      mat-icon {
+        font-size: 120px;
+        width: 120px;
+        height: 120px;
+        color: #0095f6;
+        margin-bottom: 32px;
+        opacity: 0.2;
+        flex-shrink: 0;
+      }
+
+      p {
+        margin: 0 0 12px 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #262626;
+        line-height: 32px;
+        max-width: 100%;
+        word-wrap: break-word;
+      }
+
+      span {
+        font-size: 15px;
+        color: #8e8e8e;
+        line-height: 22px;
+        max-width: 500px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+    }
+
+    .notifications-list {
+      width: 100%;
+      overflow-x: hidden; // Prevent horizontal scroll in list
+      box-sizing: border-box;
+      
+      .notification-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 20px 28px;
+        gap: 18px;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: #f8f9fa;
+          transform: translateX(2px);
+        }
+
+        &.unread {
+          background-color: #f0f7ff;
+
+          &:hover {
+            background-color: #e6f2ff;
+          }
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #0095f6;
+          }
+        }
+
+        .notification-icon {
+          flex-shrink: 0;
+          position: relative;
+
+          mat-icon {
+            width: 48px;
+            height: 48px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+            &.icon-follow {
+              background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+              color: white;
+            }
+
+            &.icon-like {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+            }
+
+            &.icon-comment {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+            }
+
+            &.icon-new_post {
+              background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+              color: white;
+            }
+
+            &.icon-report_reviewed {
+              background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+              color: white;
+            }
+          }
+
+          // Avatar placeholder (Instagram shows user avatar + small icon)
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.1;
+            z-index: -1;
+          }
+        }
+
+        .notification-content {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .notification-message {
+            margin: 0;
+            font-size: 14px;
+            line-height: 20px;
+            color: #262626;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+
+            strong {
+              font-weight: 600;
+              color: #000;
+            }
+          }
+
+          .notification-time {
+            font-size: 12px;
+            color: #8e8e8e;
+            line-height: 16px;
+          }
+        }
+
+        .unread-indicator {
+          width: 10px;
+          height: 10px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 50%;
+          flex-shrink: 0;
+          margin-top: 6px;
+          box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .notification-panel {
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 0;
+
+    .panel-content {
+      max-height: calc(100vh - 120px);
+    }
+  }
+}
