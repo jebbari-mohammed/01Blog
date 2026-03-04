@@ -3,5 +3,5 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://your-production-api.com/api'  // Change this to your production API URL
+  apiUrl: '/api'  // Relative URL – Nginx proxies /api/ to the backend container
 };
